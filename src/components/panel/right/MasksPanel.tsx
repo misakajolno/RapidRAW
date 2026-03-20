@@ -72,6 +72,7 @@ import {
 } from '../../ui/AppProperties';
 import { createSubMask } from '../../../utils/maskUtils';
 import { usePresets } from '../../../hooks/usePresets';
+import { useI18n } from '../../../i18n';
 
 interface MasksPanelProps {
   activeMaskContainerId: string | null;
@@ -160,11 +161,11 @@ const SUB_MASK_CONFIG: Record<Mask, any> = {
   [Mask.QuickEraser]: { parameters: [] },
 };
 
-const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsChange: any }) => (
+const BrushTools = ({ settings, onSettingsChange, t }: { settings: any; onSettingsChange: any; t: (key: string) => string }) => (
   <div className="space-y-4 border-t border-surface">
     <Slider
       defaultValue={100}
-      label="Brush Size"
+      label={t('Brush Size')}
       max={200}
       min={1}
       onChange={(e: any) => onSettingsChange((s: any) => ({ ...s, size: Number(e.target.value) }))}
@@ -173,7 +174,7 @@ const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsC
     />
     <Slider
       defaultValue={50}
-      label="Brush Feather"
+      label={t('Brush Feather')}
       max={100}
       min={0}
       onChange={(e: any) => onSettingsChange((s: any) => ({ ...s, feather: Number(e.target.value) }))}
@@ -185,13 +186,13 @@ const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsC
         className={`p-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${settings.tool === ToolType.Brush ? 'text-primary bg-surface' : 'bg-surface text-text-secondary hover:bg-card-active'}`}
         onClick={() => onSettingsChange((s: any) => ({ ...s, tool: ToolType.Brush }))}
       >
-        Brush
+        {t('Brush')}
       </button>
       <button
         className={`p-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${settings.tool === ToolType.Eraser ? 'text-primary bg-surface' : 'bg-surface text-text-secondary hover:bg-card-active'}`}
         onClick={() => onSettingsChange((s: any) => ({ ...s, tool: ToolType.Eraser }))}
       >
-        Eraser
+        {t('Eraser')}
       </button>
     </div>
   </div>
@@ -248,6 +249,7 @@ export default function MasksPanel({
 
   const { showContextMenu } = useContextMenu();
   const { presets } = usePresets(adjustments);
+  const { t } = useI18n();
 
   const { setNodeRef: setRootDroppableRef, isOver: isRootOver } = useDroppable({ id: 'mask-list-root' });
 
@@ -661,8 +663,8 @@ export default function MasksPanel({
       }
     };
     showContextMenu(e.clientX, e.clientY, [
-      { label: 'Paste Mask', icon: ClipboardPaste, disabled: !copiedMask, onClick: handlePaste },
-      { label: 'Add New Mask', icon: Plus, submenu: newMaskSubMenu },
+      { label: t('Paste Mask'), icon: ClipboardPaste, disabled: !copiedMask, onClick: handlePaste },
+      { label: t('Add New Mask'), icon: Plus, submenu: newMaskSubMenu },
     ]);
   };
 
@@ -679,7 +681,7 @@ export default function MasksPanel({
         onContextMenu={handlePanelContextMenu}
       >
         <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-          <h2 className="text-xl font-bold text-primary text-shadow-shiny">Masking</h2>
+          <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Masking')}</h2>
           <div className="flex items-center gap-1">
             <button
               className={clsx(
@@ -687,14 +689,14 @@ export default function MasksPanel({
                 isWaveformVisible ? 'bg-surface hover:bg-card-active' : 'hover:bg-surface',
               )}
               onClick={onToggleWaveform}
-              data-tooltip="Toggle Analytics Display"
+              data-tooltip={t('Toggle Analytics Display')}
             >
               <ChartArea size={18} />
             </button>
             <button
               className="p-2 rounded-full hover:bg-surface transition-colors"
               onClick={handleResetAllMasks}
-              data-tooltip="Reset Masking"
+              data-tooltip={t('Reset Masking')}
             >
               <RotateCcw size={18} />
             </button>
@@ -733,7 +735,7 @@ export default function MasksPanel({
         <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col min-h-0">
           <div className="p-4 pb-2 z-10 flex-shrink-0">
             <p className="text-sm mb-3 font-semibold text-text-primary">
-              {activeMaskContainerId ? 'Add to Mask' : 'Create New Mask'}
+              {activeMaskContainerId ? t('Add to Mask') : t('Create New Mask')}
             </p>
             <div className="grid grid-cols-3 gap-2" onClick={(e) => e.stopPropagation()}>
               {MASK_PANEL_CREATION_TYPES.map((maskType: MaskType) => (
@@ -760,7 +762,7 @@ export default function MasksPanel({
                 transition={{ duration: 0.2 }}
                 className={`flex-col px-4 pb-2 space-y-1 transition-colors ${isRootOver ? 'bg-surface' : ''}`}
               >
-                <p className="text-sm my-3 font-semibold text-text-primary">Masks</p>
+                <p className="text-sm my-3 font-semibold text-text-primary">{t('Masks')}</p>
 
                 <AnimatePresence
                   initial={false}
@@ -842,7 +844,7 @@ export default function MasksPanel({
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0"
               >
-                <p className="text-sm my-3 font-semibold text-text-primary px-4">Mask Adjustments</p>
+                <p className="text-sm my-3 font-semibold text-text-primary px-4">{t('Mask Adjustments')}</p>
                 <SettingsPanel
                   container={activeContainer}
                   activeSubMask={activeSubMaskData || null}
@@ -932,6 +934,8 @@ export default function MasksPanel({
 }
 
 function NewMaskDropZone({ isOver }: { isOver: boolean }) {
+  const { t } = useI18n();
+
   return (
     <motion.div
       layout
@@ -941,7 +945,7 @@ function NewMaskDropZone({ isOver }: { isOver: boolean }) {
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className={`p-4 rounded-lg text-center ${isOver ? 'border border-accent/80 bg-bg-tertiary/50' : ''}`}
     >
-      <p className="text-sm font-medium text-text-secondary">Drop here to create a new mask</p>
+      <p className="text-sm font-medium text-text-secondary">{t('Drop here to create a new mask')}</p>
     </motion.div>
   );
 }
@@ -1434,6 +1438,7 @@ function SettingsPanel({
   presets,
 }: any) {
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
   const isActive = !!container;
   const presetButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -1668,7 +1673,7 @@ function SettingsPanel({
                 />
               ))}
               {subMaskConfig.showBrushTools && brushSettings && (
-                <BrushTools settings={brushSettings} onSettingsChange={setBrushSettings} />
+                <BrushTools settings={brushSettings} onSettingsChange={setBrushSettings} t={t} />
               )}
             </>
           )}

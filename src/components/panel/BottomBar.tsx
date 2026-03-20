@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import Filmstrip from './Filmstrip';
 import { GLOBAL_KEYS, ImageFile, SelectedImage, ThumbnailAspectRatio } from '../ui/AppProperties';
+import { useI18n } from '../../i18n';
 
 interface BottomBarProps {
   filmstripHeight?: number;
@@ -50,6 +51,7 @@ interface StarRatingProps {
 }
 
 const StarRating = ({ rating, onRate, disabled }: StarRatingProps) => {
+  const { t } = useI18n();
   return (
     <div className={clsx('flex items-center gap-1', disabled && 'cursor-not-allowed')}>
       {[...Array(5)].map((_, index: number) => {
@@ -60,7 +62,13 @@ const StarRating = ({ rating, onRate, disabled }: StarRatingProps) => {
             disabled={disabled}
             key={starValue}
             onClick={() => !disabled && onRate(starValue === rating ? 0 : starValue)}
-            data-tooltip={disabled ? 'Select an image to rate' : `Rate ${starValue} star${starValue > 1 ? 's' : ''}`}
+            data-tooltip={
+              disabled
+                ? t('Select an image to rate')
+                : starValue === 1
+                  ? t('Rate 1 star')
+                  : t('Rate {count} stars', { count: starValue })
+            }
           >
             <Star
               size={18}
@@ -115,6 +123,7 @@ export default function BottomBar({
   originalSize,
   totalImages,
 }: BottomBarProps) {
+  const { t } = useI18n();
   const [isEditingPercent, setIsEditingPercent] = useState(false);
   const [percentInputValue, setPercentInputValue] = useState('');
   const isDraggingSlider = useRef(false);
@@ -268,7 +277,7 @@ export default function BottomBar({
               className="relative w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
               disabled={isCopyDisabled}
               onClick={onCopy}
-              data-tooltip="Copy Settings"
+              data-tooltip={t('Copy Settings')}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isCopied ? (
@@ -301,7 +310,7 @@ export default function BottomBar({
               className="relative w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
               disabled={isPasteDisabled}
               onClick={onPaste}
-              data-tooltip="Paste Settings"
+              data-tooltip={t('Paste Settings')}
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isPasted ? (
@@ -333,7 +342,7 @@ export default function BottomBar({
             <button
               className="w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors"
               onClick={onOpenCopyPasteSettings}
-              data-tooltip="Copy & Paste Settings"
+              data-tooltip={t('Copy & Paste Settings')}
             >
               <Settings size={18} />
             </button>
@@ -346,7 +355,7 @@ export default function BottomBar({
           >
             <div className="h-5 w-px bg-surface mr-4"></div>
             <span className="text-sm text-text-secondary whitespace-nowrap">
-              {numSelected} of {total} images selected
+              {t('{selected} of {total} images selected', { selected: numSelected, total })}
             </span>
           </div>
         </div>
@@ -357,7 +366,7 @@ export default function BottomBar({
               className="w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
               disabled={isResetDisabled}
               onClick={onReset}
-              data-tooltip="Reset All Adjustments"
+              data-tooltip={t('Reset All Adjustments')}
             >
               <RotateCcw size={18} />
             </button>
@@ -365,7 +374,7 @@ export default function BottomBar({
               className="w-8 h-8 flex items-center justify-center rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors disabled:opacity-40 disabled:hover:bg-transparent disabled:cursor-not-allowed"
               disabled={isExportDisabled}
               onClick={onExportClick}
-              data-tooltip="Export"
+              data-tooltip={t('Export')}
             >
               <Save size={18} />
             </button>
@@ -378,10 +387,10 @@ export default function BottomBar({
                 onClick={handleResetZoom}
                 onMouseEnter={() => setIsZoomLabelHovered(true)}
                 onMouseLeave={() => setIsZoomLabelHovered(false)}
-                data-tooltip="Reset Zoom to Fit Window"
+                data-tooltip={t('Reset Zoom to Fit Window')}
               >
                 <span className="absolute right-0 text-xs text-text-secondary select-none text-right w-max transition-colors hover:text-text-primary">
-                  {isZoomLabelHovered ? 'Reset Zoom' : 'Zoom'}
+                  {isZoomLabelHovered ? t('Reset Zoom') : t('Zoom')}
                 </span>
               </div>
 
@@ -422,7 +431,7 @@ export default function BottomBar({
                   <span
                     onClick={handlePercentClick}
                     className="cursor-pointer hover:text-text-primary transition-colors select-none"
-                    data-tooltip="Click to enter custom zoom percentage"
+                    data-tooltip={t('Click to enter custom zoom percentage')}
                   >
                     {latchedDisplayPercent}%
                   </span>
@@ -433,7 +442,7 @@ export default function BottomBar({
             <button
               className="p-1.5 rounded-md text-text-secondary hover:bg-surface hover:text-text-primary transition-colors"
               onClick={() => setIsFilmstripVisible?.(!isFilmstripVisible)}
-              data-tooltip={isFilmstripVisible ? 'Collapse Filmstrip' : 'Expand Filmstrip'}
+              data-tooltip={isFilmstripVisible ? t('Collapse Filmstrip') : t('Expand Filmstrip')}
             >
               {isFilmstripVisible ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
             </button>

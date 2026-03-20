@@ -6,6 +6,7 @@ import { Theme, OPTION_SEPARATOR } from '../ui/AppProperties';
 import { useContextMenu } from '../../context/ContextMenuContext';
 import Text from '../ui/Text';
 import { TextColors, TextVariants, TextWeights } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 let curveClipboard: Array<Coord> | null = null;
 
@@ -157,6 +158,7 @@ export default function CurveGraph({
   isForMask,
   onDragStateChange,
 }: CurveGraphProps) {
+  const { t } = useI18n();
   const { showContextMenu } = useContextMenu();
   const [activeChannel, setActiveChannel] = useState<ActiveChannel>(ActiveChannel.Luma);
   const [draggingPointIndex, setDraggingPointIndex] = useState<number | null>(null);
@@ -287,6 +289,7 @@ export default function CurveGraph({
   const propPoints = adjustments?.curves?.[activeChannel];
   const points = localPoints ?? propPoints;
   const { color, data: histogramData } = channelConfig[activeChannel];
+  const getChannelLabel = (channel: ActiveChannel) => t(channel.charAt(0).toUpperCase() + channel.slice(1));
 
   if (!propPoints || !points) {
     return (
@@ -295,7 +298,7 @@ export default function CurveGraph({
         variant={TextVariants.small}
         className="w-full aspect-square bg-surface-secondary p-1 rounded-md flex items-center justify-center"
       >
-        Curve data not available.
+        {t('Curve data not available.')}
       </Text>
     );
   }
@@ -442,19 +445,19 @@ export default function CurveGraph({
 
     const options = [
       {
-        label: `Copy ${activeChannel.charAt(0).toUpperCase() + activeChannel.slice(1)} Curve`,
+        label: t('Copy {channel} Curve', { channel: getChannelLabel(activeChannel) }),
         icon: Copy,
         onClick: handleCopy,
       },
       {
-        label: 'Paste Curve',
+        label: t('Paste Curve'),
         icon: ClipboardPaste,
         onClick: handlePaste,
         disabled: !curveClipboard,
       },
       { type: OPTION_SEPARATOR },
       {
-        label: `Reset ${activeChannel.charAt(0).toUpperCase() + activeChannel.slice(1)} Curve`,
+        label: t('Reset {channel} Curve', { channel: getChannelLabel(activeChannel) }),
         icon: RotateCcw,
         onClick: handleReset,
       },
@@ -462,7 +465,7 @@ export default function CurveGraph({
 
     if (areOtherChannelsDirty) {
       options.push({
-        label: 'Reset All Curves',
+        label: t('Reset All Curves'),
         icon: RotateCcw,
         onClick: handleResetAll,
       });

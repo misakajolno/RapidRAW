@@ -14,6 +14,7 @@ import { Adjustments, SectionVisibility, INITIAL_ADJUSTMENTS, ADJUSTMENT_SECTION
 import { useContextMenu } from '../../../context/ContextMenuContext';
 import { OPTION_SEPARATOR, SelectedImage, AppSettings, WaveformData, Orientation } from '../../ui/AppProperties';
 import { ChannelConfig } from '../../adjustments/Curves';
+import { useI18n } from '../../../i18n';
 
 interface ControlsPanelOption {
   disabled?: boolean;
@@ -72,6 +73,7 @@ export default function Controls({
   waveformHeight,
   setWaveformHeight,
 }: ControlsProps) {
+  const { t } = useI18n();
   const { showContextMenu } = useContextMenu();
   const [isResizingWaveform, setIsResizingWaveform] = useState<boolean>(false);
 
@@ -202,13 +204,13 @@ export default function Controls({
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-        <h2 className="text-xl font-bold text-primary text-shadow-shiny">Adjustments</h2>
+        <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('common.labels.adjustments')}</h2>
         <div className="flex items-center gap-1">
           <button
             className="p-2 rounded-full hover:bg-surface disabled:cursor-not-allowed transition-colors"
             disabled={!selectedImage?.isReady}
             onClick={handleAutoAdjustments}
-            data-tooltip="Auto Adjust Image"
+            data-tooltip={t('Auto Adjust Image')}
           >
             <Aperture size={18} />
           </button>
@@ -218,7 +220,7 @@ export default function Controls({
               isWaveformVisible ? 'bg-surface hover:bg-card-active' : 'hover:bg-surface',
             )}
             onClick={onToggleWaveform}
-            data-tooltip="Toggle Analytics Display"
+            data-tooltip={t('Toggle Analytics Display')}
           >
             <ChartArea size={18} />
           </button>
@@ -226,7 +228,7 @@ export default function Controls({
             className="p-2 rounded-full hover:bg-surface disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             disabled={!selectedImage}
             onClick={handleResetAdjustments}
-            data-tooltip="Reset Adjustments"
+            data-tooltip={t('Reset Adjustments')}
           >
             <RotateCcw size={18} />
           </button>

@@ -33,6 +33,7 @@ import { Invokes } from '../ui/AppProperties';
 import Text from '../ui/Text';
 import { TextColors, TextVariants, TextWeights } from '../../types/typography';
 import { platform } from '@tauri-apps/plugin-os';
+import { LOCALE_LABELS, useI18n } from '../../i18n';
 
 interface ConfirmModalState {
   confirmText: string;
@@ -291,6 +292,7 @@ export default function SettingsPanel({
   onSettingsChange,
   rootPath,
 }: SettingsPanelProps) {
+  const { t } = useI18n();
   const { user: _user } = useUser();
   const [isClearing, setIsClearing] = useState(false);
   const [clearMessage, setClearMessage] = useState('');
@@ -331,6 +333,19 @@ export default function SettingsPanel({
   });
   const [restartRequired, setRestartRequired] = useState(false);
   const [activeCategory, setActiveCategory] = useState('general');
+  const localizedSettingCategories = [
+    { id: 'general', label: t('settings.categories.general'), icon: SlidersHorizontal },
+    { id: 'processing', label: t('settings.categories.processing'), icon: Cpu },
+    { id: 'shortcuts', label: t('settings.categories.shortcuts'), icon: Keyboard },
+  ];
+  const localeOptions = [
+    { value: 'en', label: LOCALE_LABELS.en },
+    { value: 'zh-CN', label: LOCALE_LABELS['zh-CN'] },
+  ];
+  const fontOptions = [
+    { value: 'poppins', label: t('settings.font.poppins') },
+    { value: 'system', label: t('settings.font.system') },
+  ];
   const [logPath, setLogPath] = useState('');
   const [dpr, setDpr] = useState(() => (typeof window !== 'undefined' ? window.devicePixelRatio : 1));
   const [osPlatform, setOsPlatform] = useState('');
@@ -606,13 +621,13 @@ export default function SettingsPanel({
 
   const handleClearCache = () => {
     setConfirmModalState({
-      confirmText: 'Clear Cache',
+      confirmText: t('Clear Cache'),
       confirmVariant: 'destructive',
       isOpen: true,
       message:
         'Are you sure you want to clear the thumbnail cache?\n\nAll thumbnails will need to be regenerated, which may be slow for large folders.',
       onConfirm: executeClearCache,
-      title: 'Confirm Cache Deletion',
+      title: t('Confirm Cache Deletion'),
     });
   };
 
@@ -620,12 +635,12 @@ export default function SettingsPanel({
     if (!aiConnectorAddress) {
       return;
     }
-    setTestStatus({ testing: true, message: 'Testing...', success: null });
+    setTestStatus({ testing: true, message: t('Testing...'), success: null });
     try {
       await invoke(Invokes.TestAIConnectorConnection, { address: aiConnectorAddress });
-      setTestStatus({ testing: false, message: 'Connection successful!', success: true });
+      setTestStatus({ testing: false, message: t('Connection successful!'), success: true });
     } catch (err) {
-      setTestStatus({ testing: false, message: `Connection failed.`, success: false });
+      setTestStatus({ testing: false, message: t('Connection failed.'), success: false });
       console.error('AI Connector connection test failed:', err);
     } finally {
       setTimeout(() => setTestStatus({ testing: false, message: '', success: null }), EXECUTE_TIMEOUT);
@@ -707,7 +722,7 @@ export default function SettingsPanel({
           </div>
 
           <div className="relative flex w-full min-[1200px]:w-[450px] p-2 bg-surface rounded-md">
-            {settingCategories.map((category) => (
+            {localizedSettingCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
@@ -750,10 +765,10 @@ export default function SettingsPanel({
               >
                 <div className="p-6 bg-surface rounded-xl shadow-md">
                   <Text variant={TextVariants.title} color={TextColors.accent} className="mb-8">
-                    General Settings
+                    {t('settings.generalTitle')}
                   </Text>
                   <div className="space-y-8">
-                    <SettingItem label="Theme" description="Change the look and feel of the application.">
+                    <SettingItem label={t('settings.theme.label')} description={t('settings.theme.description')}>
                       <Dropdown
                         onChange={(value: any) => onSettingsChange({ ...appSettings, theme: value })}
                         options={THEMES.map((theme: ThemeProps) => ({ value: theme.id, label: theme.name }))}
@@ -761,38 +776,46 @@ export default function SettingsPanel({
                       />
                     </SettingItem>
 
+                    <SettingItem label={t('locale.label')} description={t('locale.description')}>
+                      <Dropdown
+                        onChange={(value: any) => onSettingsChange({ ...appSettings, locale: value })}
+                        options={localeOptions}
+                        value={appSettings?.locale || 'en'}
+                      />
+                    </SettingItem>
+
                     <SettingItem
-                      description="Dynamically changes editor colors based on the current image."
-                      label="Editor Theme"
+                      description={t('settings.editorTheme.description')}
+                      label={t('settings.editorTheme.label')}
                     >
                       <Switch
                         checked={appSettings?.adaptiveEditorTheme ?? false}
                         id="adaptive-theme-toggle"
-                        label="Adaptive Editor Theme"
+                        label={t('settings.editorTheme.adaptive')}
                         onChange={(checked) => onSettingsChange({ ...appSettings, adaptiveEditorTheme: checked })}
                       />
                     </SettingItem>
 
                     <SettingItem
-                      label="EXIF Library Sorting"
-                      description="Read EXIF data (ISO, aperture, etc.) on folder load at the cost of slower folder loading when using EXIF sorting."
+                      label={t('settings.exif.label')}
+                      description={t('settings.exif.description')}
                     >
                       <Switch
                         checked={appSettings?.enableExifReading ?? false}
                         id="exif-reading-toggle"
-                        label="EXIF Reading"
+                        label={t('settings.exif.toggle')}
                         onChange={(checked) => onSettingsChange({ ...appSettings, enableExifReading: checked })}
                       />
                     </SettingItem>
 
                     <SettingItem
-                      label="XMP Metadata Sync"
-                      description="Sync ratings, color labels and tags to standard XMP sidecar files for compatibility with other photo editors."
+                      label={t('settings.xmpSync.label')}
+                      description={t('settings.xmpSync.description')}
                     >
                       <Switch
                         checked={appSettings?.enableXmpSync ?? true}
                         id="enable-xmp-sync-toggle"
-                        label="Enable XMP Sync"
+                        label={t('settings.xmpSync.toggle')}
                         onChange={(checked) => {
                           const newSettings = { ...appSettings, enableXmpSync: checked };
                           if (!checked) {
@@ -804,49 +827,46 @@ export default function SettingsPanel({
                     </SettingItem>
 
                     <SettingItem
-                      label="Create Missing XMP Files"
-                      description="Automatically create a new XMP sidecar file if one does not exist for an image. (Requires XMP Sync)"
+                      label={t('settings.createMissingXmp.label')}
+                      description={t('settings.createMissingXmp.description')}
                     >
                       <Switch
                         disabled={!appSettings?.enableXmpSync}
                         checked={appSettings?.createXmpIfMissing ?? false}
                         id="create-xmp-missing-toggle"
-                        label="Create XMP if missing"
+                        label={t('settings.createMissingXmp.toggle')}
                         onChange={(checked) => onSettingsChange({ ...appSettings, createXmpIfMissing: checked })}
                       />
                     </SettingItem>
 
                     <SettingItem
-                      label="Folder Image Counts"
-                      description="Show the number of images inside folders when hovering over the folder tree."
+                      label={t('settings.folderCounts.label')}
+                      description={t('settings.folderCounts.description')}
                     >
                       <Switch
                         checked={appSettings?.enableFolderImageCounts ?? false}
                         id="folder-image-counts-toggle"
-                        label="Show Image Counts"
+                        label={t('settings.folderCounts.toggle')}
                         onChange={(checked) => onSettingsChange({ ...appSettings, enableFolderImageCounts: checked })}
                       />
                     </SettingItem>
 
                     <SettingItem
-                      description="Enables or disables transparency effects for the application window. Relaunch required."
-                      label="Window Effects"
+                      description={t('settings.windowEffects.description')}
+                      label={t('settings.windowEffects.label')}
                     >
                       <Switch
                         checked={appSettings?.transparent ?? true}
                         id="window-effects-toggle"
-                        label="Transparency"
+                        label={t('settings.windowEffects.toggle')}
                         onChange={handleSetTransparent}
                       />
                     </SettingItem>
 
-                    <SettingItem label="Font" description="Change the application font.">
+                    <SettingItem label={t('settings.font.label')} description={t('settings.font.description')}>
                       <Dropdown
                         onChange={(value: any) => onSettingsChange({ ...appSettings, fontFamily: value })}
-                        options={[
-                          { value: 'poppins', label: 'Poppins' },
-                          { value: 'system', label: 'System Default' },
-                        ]}
+                        options={fontOptions}
                         value={appSettings?.fontFamily || 'poppins'}
                       />
                     </SettingItem>
@@ -855,15 +875,14 @@ export default function SettingsPanel({
 
                 <div className="p-6 bg-surface rounded-xl shadow-md">
                   <Text variant={TextVariants.title} color={TextColors.accent} className="mb-8">
-                    Adjustments Visibility
+                    {t('settings.adjustmentsVisibilityTitle')}
                   </Text>
                   <Text className="mb-4">
-                    Hide adjustment sections you don't use often to simplify the editing panel. Your settings will be
-                    preserved and applied even when hidden.
+                    {t('settings.adjustmentsVisibilityDescription')}
                   </Text>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
                     <Switch
-                      label="Chromatic Aberration"
+                      label={t('settings.chromaticAberration')}
                       checked={appSettings?.adjustmentVisibility?.chromaticAberration ?? false}
                       onChange={(checked) =>
                         onSettingsChange({
@@ -876,7 +895,7 @@ export default function SettingsPanel({
                       }
                     />
                     <Switch
-                      label="Grain"
+                      label={t('settings.grain')}
                       checked={appSettings?.adjustmentVisibility?.grain ?? true}
                       onChange={(checked) =>
                         onSettingsChange({
@@ -889,7 +908,7 @@ export default function SettingsPanel({
                       }
                     />
                     <Switch
-                      label="Color Calibration"
+                      label={t('settings.colorCalibration')}
                       checked={appSettings?.adjustmentVisibility?.colorCalibration ?? true}
                       onChange={(checked) =>
                         onSettingsChange({
@@ -906,44 +925,44 @@ export default function SettingsPanel({
 
                 <div className="p-6 bg-surface rounded-xl shadow-md">
                   <Text variant={TextVariants.title} color={TextColors.accent} className="mb-8">
-                    My Lenses
+                    {t('settings.myLensesTitle')}
                   </Text>
                   <Text className="mb-6">
-                    Create a list of your frequently used lenses to quickly access them in the Lens Correction panel.
+                    {t('settings.myLensesDescription')}
                   </Text>
 
                   <div className="space-y-8">
                     <div className="bg-bg-primary rounded-lg p-4 border border-border-color">
                       <Text variant={TextVariants.heading} className="mb-3">
-                        Add New Lens
+                        {t('settings.addNewLensTitle')}
                       </Text>
                       <div className="space-y-4">
                         <Dropdown
                           options={lensMakers.map((m) => ({ label: m, value: m }))}
                           value={tempLensMaker}
                           onChange={handleTempMakerChange}
-                          placeholder="Select Manufacturer"
+                          placeholder={t('settings.selectManufacturer')}
                         />
                         <Dropdown
                           options={lensModels.map((m) => ({ label: m, value: m }))}
                           value={tempLensModel}
                           onChange={setTempLensModel}
-                          placeholder="Select Lens Model"
+                          placeholder={t('settings.selectLensModel')}
                           disabled={!tempLensMaker}
                         />
                         <Button onClick={handleAddLens} disabled={!tempLensMaker || !tempLensModel} className="w-full">
                           <Plus size={16} className="mr-1" />
-                          Add to My Lenses
+                          {t('Add to My Lenses')}
                         </Button>
                       </div>
                     </div>
 
                     <div>
                       <Text variant={TextVariants.heading} className="mb-2">
-                        Saved Lenses
+                        {t('Saved Lenses')}
                       </Text>
                       {(!appSettings?.myLenses || appSettings.myLenses.length === 0) && (
-                        <Text className="italic">No lenses added yet.</Text>
+                        <Text className="italic">{t('settings.noLensesAdded')}</Text>
                       )}
                       <div className="divide-y divide-border-color">
                         {(appSettings?.myLenses || []).map((lens: MyLens, index: number) => (
@@ -1071,13 +1090,13 @@ export default function SettingsPanel({
                                         value={newAiTag}
                                         onChange={(e) => setNewAiTag(e.target.value)}
                                         onKeyDown={handleAiTagInputKeyDown}
-                                        placeholder="Add custom AI tags (comma separated)..."
+                                        placeholder={t('Add custom AI tags (comma separated)...')}
                                         className="pr-10"
                                       />
                                       <button
                                         onClick={handleAddAiTag}
                                         className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-text-secondary hover:text-text-primary hover:bg-surface"
-                                        data-tooltip="Add AI tag"
+                                        data-tooltip={t('Add AI tag')}
                                       >
                                         <Plus size={18} />
                                       </button>
@@ -1086,7 +1105,7 @@ export default function SettingsPanel({
                                       onClick={() => onSettingsChange({ ...appSettings, customAiTags: [] })}
                                       disabled={customAiTags.length === 0}
                                       className="p-2 text-text-secondary hover:text-red-400 hover:bg-surface rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-text-secondary disabled:hover:bg-transparent"
-                                      data-tooltip="Clear AI Tag List"
+                                      data-tooltip={t('Clear AI Tag List')}
                                     >
                                       <Trash2 size={18} />
                                     </button>
@@ -1148,13 +1167,13 @@ export default function SettingsPanel({
                               value={newShortcut}
                               onChange={(e) => setNewShortcut(e.target.value)}
                               onKeyDown={handleInputKeyDown}
-                              placeholder="Add shortcuts (comma separated)..."
+                              placeholder={t('Add shortcuts (comma separated)...')}
                               className="pr-10"
                             />
                             <button
                               onClick={handleAddShortcut}
                               className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 rounded-full text-text-secondary hover:text-text-primary hover:bg-surface"
-                              data-tooltip="Add Shortcut"
+                              data-tooltip={t('Add Shortcut')}
                             >
                               <Plus size={18} />
                             </button>
@@ -1163,7 +1182,7 @@ export default function SettingsPanel({
                             onClick={() => onSettingsChange({ ...appSettings, taggingShortcuts: [] })}
                             disabled={taggingShortcuts.length === 0}
                             className="p-2 text-text-secondary hover:text-red-400 hover:bg-surface rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:text-text-secondary disabled:hover:bg-transparent"
-                            data-tooltip="Clear Shortcuts Tag List"
+                            data-tooltip={t('Clear Shortcuts Tag List')}
                           >
                             <Trash2 size={18} />
                           </button>
@@ -1488,14 +1507,14 @@ export default function SettingsPanel({
                                 Connector server. This gives you full control for technical workflows.
                               </Text>
                               <Text as="ul" className="mt-3 space-y-1 list-disc list-inside">
-                                <li>Use your own ComfyUI instance</li>
-                                <li>Cost-free advanced generative edits</li>
-                                <li>Custom workflow selection</li>
+                                <li>{t('Use your own ComfyUI instance')}</li>
+                                <li>{t('Cost-free advanced generative edits')}</li>
+                                <li>{t('Custom workflow selection')}</li>
                               </Text>
                             </div>
                             <SettingItem
-                              label="AI Connector Address"
-                              description="Enter the address and port of your running AI Connector instance. Required for generative AI features."
+                              label={t('AI Connector Address')}
+                              description={t('Enter the address and port of your running AI Connector instance. Required for generative AI features.')}
                             >
                               <div className="flex items-center gap-2">
                                 <Input
@@ -1515,7 +1534,7 @@ export default function SettingsPanel({
                                   disabled={testStatus.testing || !aiConnectorAddress}
                                   onClick={handleTestConnection}
                                 >
-                                  {testStatus.testing ? 'Testing...' : 'Test'}
+                                  {testStatus.testing ? t('Testing...') : t('Test')}
                                 </Button>
                               </div>
                               {testStatus.message && (

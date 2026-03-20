@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import { SelectedImage, AppSettings, Invokes } from '../../ui/AppProperties';
 import { COLOR_LABELS, Color } from '../../../utils/adjustments';
+import { useI18n } from '../../../i18n';
 
 interface CameraSetting {
   format?(value: number): void;
@@ -117,6 +118,7 @@ export default function MetadataPanel({
   const [isOrganizationExpanded, setIsOrganizationExpanded] = useState(false);
   const [tagInputValue, setTagInputValue] = useState('');
   const [isTagInputFocused, setIsTagInputFocused] = useState(false);
+  const { t } = useI18n();
 
   const { keyCameraSettings, gpsData, otherExifEntries } = useMemo(() => {
     const exif = selectedImage?.exif || {};
@@ -210,20 +212,20 @@ export default function MetadataPanel({
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-        <h2 className="text-xl font-bold text-primary text-shadow-shiny">Metadata</h2>
+        <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Metadata')}</h2>
       </div>
       <div className="flex-grow overflow-y-auto p-4 text-text-secondary custom-scrollbar">
         {selectedImage ? (
           <div className="flex flex-col gap-6">
             <div>
               <h3 className="text-base font-bold text-text-primary mb-2 border-b border-surface pb-1">
-                Image Properties
+                {t('Image Properties')}
               </h3>
               <div className="flex flex-col gap-1">
-                <MetadataItem label="Filename" value={selectedImage.path.split(/[\\/]/).pop()} />
-                <MetadataItem label="Dimensions" value={`${selectedImage.width} x ${selectedImage.height}`} />
+                <MetadataItem label={t('Filename')} value={selectedImage.path.split(/[\\/]/).pop()} />
+                <MetadataItem label={t('Dimensions')} value={`${selectedImage.width} x ${selectedImage.height}`} />
                 <MetadataItem 
-                  label="Capture Date" 
+                  label={t('Capture Date')} 
                   value={selectedImage.exif?.DateTimeOriginal || '-'} 
                 />
               </div>
@@ -234,7 +236,7 @@ export default function MetadataPanel({
                   className="w-full flex items-center justify-between p-3 text-xs font-semibold text-text-primary hover:bg-surface/50 transition-colors"
                 >
                   <span className="flex items-center gap-2">
-                    <Tag size={14} /> Organization
+                    <Tag size={14} /> {t('Organization')}
                   </span>
                   {isOrganizationExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                 </button>
@@ -250,7 +252,7 @@ export default function MetadataPanel({
                     >
                       <div className="p-3 pt-0 border-t border-surface/50 flex flex-col gap-3">
                         <div className="mt-3">
-                            <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-1 block">Rating</span>
+                            <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-1 block">{t('Rating')}</span>
                             <div className="flex items-center gap-1">
                               {[1, 2, 3, 4, 5].map((star) => (
                                 <button
@@ -272,7 +274,7 @@ export default function MetadataPanel({
                             </div>
                         </div>
                         <div>
-                            <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-2 mt-1 block">Color Label</span>
+                            <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-2 mt-1 block">{t('Color Label')}</span>
                             <div className="flex flex-wrap gap-2">
                               <button
                                 onClick={() => onSetColorLabel(null, [selectedImage.path])}
@@ -280,7 +282,7 @@ export default function MetadataPanel({
                                   "w-5 h-5 rounded-full border border-text-tertiary/30 flex items-center justify-center transition-all hover:scale-110",
                                   currentColor === null ? "ring-2 ring-text-secondary ring-offset-1 ring-offset-bg-primary" : "opacity-50 hover:opacity-100"
                                 )}
-                                data-tooltip="None"
+                                data-tooltip={t('None')}
                               >
                                 <X size={12} className="text-text-tertiary" />
                               </button>
@@ -305,7 +307,7 @@ export default function MetadataPanel({
                             </div>
                         </div>
                         <div>
-                           <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-2 mt-1  block">Tags</span>
+                           <span className="text-xs text-text-tertiary uppercase tracking-wider font-bold mb-2 mt-1  block">{t('Tags')}</span>
                            <div className="flex flex-wrap gap-1.5 mb-2">
                               <AnimatePresence>
                                 {currentTags.length > 0 ? (
@@ -324,7 +326,7 @@ export default function MetadataPanel({
                                     </motion.div>
                                   ))
                                 ) : (
-                                  <span className="text-xs text-text-tertiary italic">No tags</span>
+                                  <span className="text-xs text-text-tertiary italic">{t('No tags')}</span>
                                 )}
                               </AnimatePresence>
                            </div>
@@ -340,7 +342,7 @@ export default function MetadataPanel({
                                 onKeyDown={handleTagInputKeyDown}
                                 onFocus={() => setIsTagInputFocused(true)}
                                 onBlur={() => setIsTagInputFocused(false)}
-                                placeholder="Add tag..."
+                                placeholder={t('Add tag...')}
                                 className="bg-transparent border-none outline-none text-xs w-full text-text-primary placeholder-text-tertiary"
                              />
                              <button
@@ -440,11 +442,11 @@ export default function MetadataPanel({
             )}
 
             {Object.keys(selectedImage.exif || {}).length === 0 && (
-              <p className="text-xs text-center text-text-secondary mt-4">No EXIF data found in this file.</p>
+              <p className="text-xs text-center text-text-secondary mt-4">{t('No EXIF data found in this file.')}</p>
             )}
           </div>
         ) : (
-          <p className="text-center">No image selected.</p>
+          <p className="text-center">{t('common.states.noImageSelected')}</p>
         )}
       </div>
     </div>

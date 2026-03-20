@@ -118,6 +118,8 @@ export enum ThumbnailAspectRatio {
   Contain = 'contain',
 }
 
+export type AppLocale = 'en' | 'zh-CN';
+
 export interface AppSettings {
   adaptiveEditorTheme?: Theme;
   aiConnectorAddress?: string;
@@ -134,6 +136,7 @@ export interface AppSettings {
   lastFolderState?: any;
   pinnedFolders?: any;
   lastRootPath: string | null;
+  locale?: AppLocale;
   libraryViewMode?: LibraryViewMode;
   sortCriteria?: SortCriteria;
   theme: Theme;

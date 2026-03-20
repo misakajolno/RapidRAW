@@ -48,6 +48,7 @@ import {
 import { Adjustments, AiPatch } from '../../../utils/adjustments';
 import { BrushSettings, SelectedImage } from '../../ui/AppProperties';
 import { createSubMask } from '../../../utils/maskUtils';
+import { useI18n } from '../../../i18n';
 
 interface AiPanelProps {
   adjustments: Adjustments;
@@ -132,11 +133,13 @@ const SUB_MASK_CONFIG: any = {
   },
 };
 
-const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsChange: any }) => (
+const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsChange: any }) => {
+  const { t } = useI18n();
+  return (
   <div className="space-y-4 pt-4 border-t border-surface mt-4">
     <Slider
       defaultValue={100}
-      label="Brush Size"
+      label={t('Brush Size')}
       max={200}
       min={1}
       onChange={(e: any) => onSettingsChange((s: any) => ({ ...s, size: Number(e.target.value) }))}
@@ -145,7 +148,7 @@ const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsC
     />
     <Slider
       defaultValue={50}
-      label="Brush Feather"
+      label={t('Brush Feather')}
       max={100}
       min={0}
       onChange={(e: any) => onSettingsChange((s: any) => ({ ...s, feather: Number(e.target.value) }))}
@@ -161,7 +164,7 @@ const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsC
         }`}
         onClick={() => onSettingsChange((s: any) => ({ ...s, tool: ToolType.Brush }))}
       >
-        Add
+        {t('common.actions.add')}
       </button>
       <button
         className={`p-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
@@ -171,20 +174,22 @@ const BrushTools = ({ settings, onSettingsChange }: { settings: any; onSettingsC
         }`}
         onClick={() => onSettingsChange((s: any) => ({ ...s, tool: ToolType.Eraser }))}
       >
-        Erase
+        {t('Erase')}
       </button>
     </div>
   </div>
-);
+  );
+};
 
 const ConnectionStatus = ({ isConnected }: ConnectionStatusProps) => {
+  const { t } = useI18n();
   const [isHovered, setIsHovered] = useState(false);
   if (isConnected) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 bg-surface rounded-lg mb-4">
         <div className={'w-2.5 h-2.5 rounded-full bg-green-500'} />
-        <span className="text-sm font-medium text-text-secondary">AI Connector:</span>
-        <span className={'text-sm font-bold text-green-400'}>Ready</span>
+        <span className="text-sm font-medium text-text-secondary">{t('AI Connector:')}</span>
+        <span className={'text-sm font-bold text-green-400'}>{t('common.states.ready')}</span>
       </div>
     );
   }
@@ -196,8 +201,8 @@ const ConnectionStatus = ({ isConnected }: ConnectionStatusProps) => {
     >
       <div className="flex items-center gap-2 px-4 pt-2">
         <div className={'w-2.5 h-2.5 rounded-full bg-red-500'} />
-        <span className="text-sm font-medium text-text-secondary">AI Connector:</span>
-        <span className={'text-sm font-bold text-red-400'}>Not Detected</span>
+        <span className="text-sm font-medium text-text-secondary">{t('AI Connector:')}</span>
+        <span className={'text-sm font-bold text-red-400'}>{t('common.states.notDetected')}</span>
       </div>
       <div className="px-4 pb-2">
         <motion.div
@@ -207,7 +212,7 @@ const ConnectionStatus = ({ isConnected }: ConnectionStatusProps) => {
           transition={{ duration: 0.2, ease: 'easeInOut' }}
         >
           <p className="text-xs text-text-secondary">
-            Only simple inpainting available. Connect backend for generative features.
+            {t('Only simple inpainting available. Connect backend for generative features.')}
           </p>
         </motion.div>
       </div>
@@ -236,6 +241,7 @@ export default function AIPanel({
   setCustomEscapeHandler,
   onDragStateChange,
 }: AiPanelProps) {
+  const { t } = useI18n();
   const [expandedContainers, setExpandedContainers] = useState<Set<string>>(new Set());
   const [activeDragItem, setActiveDragItem] = useState<DragData | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -625,11 +631,11 @@ export default function AIPanel({
     >
       <div className="flex flex-col h-full select-none overflow-hidden" onClick={handleDeselect}>
         <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-          <h2 className="text-xl font-bold text-primary text-shadow-shiny">Inpainting</h2>
+          <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Inpainting')}</h2>
           <button
             className="p-2 rounded-full hover:bg-surface transition-colors"
             onClick={handleResetAllAiEdits}
-            data-tooltip="Reset Inpainting"
+            data-tooltip={t('Reset Inpainting')}
           >
             <RotateCcw size={18} />
           </button>
@@ -637,13 +643,13 @@ export default function AIPanel({
 
         <div className="flex-1 overflow-y-auto overflow-x-hidden flex flex-col min-h-0">
           <div className="p-4 pb-2 z-10 flex-shrink-0">
-            {!selectedImage && <p className="text-center text-text-tertiary mt-4">No image selected.</p>}
+            {!selectedImage && <p className="text-center text-text-tertiary mt-4">{t('common.states.noImageSelected')}</p>}
 
             {selectedImage && (
               <>
                 <ConnectionStatus isConnected={isAIConnectorConnected} />
                 <p className="text-sm mb-3 font-semibold text-text-primary">
-                  {activePatchContainerId ? 'Add to Selection' : 'Create New Generative Edit'}
+                  {activePatchContainerId ? t('Add to Selection') : t('Create New Generative Edit')}
                 </p>
                 <div className="grid grid-cols-3 gap-2" onClick={(e) => e.stopPropagation()}>
                   {AI_PANEL_CREATION_TYPES.map((maskType: MaskType) => {
@@ -683,11 +689,11 @@ export default function AIPanel({
                 transition={{ duration: 0.2 }}
                 className={`flex flex-col px-4 pb-2 space-y-1 transition-colors ${isRootOver ? 'bg-surface' : ''}`}
               >
-                <p className="text-sm my-3 font-semibold text-text-primary">Edits</p>
+                <p className="text-sm my-3 font-semibold text-text-primary">{t('Edits')}</p>
 
                 {isPatchListEmpty && (adjustments.aiPatches || []).length === 0 && (
                   <div className="text-center text-text-secondary text-sm py-4 opacity-70">
-                    No generative edits created.
+                    {t('No generative edits created.')}
                   </div>
                 )}
 
@@ -751,7 +757,7 @@ export default function AIPanel({
                 transition={{ duration: 0.2, ease: 'easeOut' }}
                 className="flex-1 min-h-0"
               >
-                <p className="text-sm my-3 font-semibold text-text-primary px-4">Edit Settings</p>
+                <p className="text-sm my-3 font-semibold text-text-primary px-4">{t('Edit Settings')}</p>
                 <SettingsPanel
                   container={activeContainer || null}
                   activeSubMask={activeSubMaskData || null}
@@ -822,6 +828,8 @@ export default function AIPanel({
 }
 
 function NewMaskDropZone({ isOver }: { isOver: boolean }) {
+  const { t } = useI18n();
+
   return (
     <motion.div
       layout
@@ -831,7 +839,7 @@ function NewMaskDropZone({ isOver }: { isOver: boolean }) {
       transition={{ duration: 0.2, ease: 'easeOut' }}
       className={`p-4 rounded-lg text-center ${isOver ? 'border border-accent/80 bg-bg-tertiary/50' : ''}`}
     >
-      <p className="text-sm font-medium text-text-secondary">Drop here to create a new edit</p>
+      <p className="text-sm font-medium text-text-secondary">{t('Drop here to create a new edit')}</p>
     </motion.div>
   );
 }
@@ -1251,6 +1259,7 @@ function SettingsPanel({
   collapsibleState,
   setCollapsibleState,
 }: any) {
+  const { t } = useI18n();
   const isActive = !!container;
   const isComponentMode = !!activeSubMask;
 
@@ -1294,7 +1303,7 @@ function SettingsPanel({
       onClick={(e) => e.stopPropagation()}
     >
       <CollapsibleSection
-        title="Generative Replace"
+        title={t('Generative Replace')}
         isOpen={collapsibleState.generative}
         onToggle={() => handleToggleSection('generative')}
         canToggleVisibility={false}
@@ -1303,23 +1312,23 @@ function SettingsPanel({
         <div className="space-y-3 pt-2">
           <p className="text-xs text-text-secondary">
             {isQuickErasePatch
-              ? 'Fill selection to remove the object.'
+              ? t('Fill selection to remove the object.')
               : useFastInpaint
-                ? 'Fill selection based on surrounding pixels.'
-                : 'Describe what you want to generate in the selected area.'}
+                ? t('Fill selection based on surrounding pixels.')
+                : t('Describe what you want to generate in the selected area.')}
           </p>
 
           <Switch
             checked={useFastInpaint}
             disabled={isQuickErasePatch || !isAIConnectorConnected}
-            label="Use fast inpainting"
+            label={t('Use fast inpainting')}
             onChange={setUseFastInpaint}
             tooltip={
               isQuickErasePatch
-                ? 'Quick Erase always uses fast inpainting.'
+                ? t('Quick Erase always uses fast inpainting.')
                 : !isAIConnectorConnected
-                  ? 'AI Connector not connected, fast inpainting is required.'
-                  : 'Fast inpainting is quicker but not generative. Uncheck to use AI Connector with a text prompt.'
+                  ? t('AI Connector not connected, fast inpainting is required.')
+                  : t('Fast inpainting is quicker but not generative. Uncheck to use AI Connector with a text prompt.')
             }
           />
 
@@ -1343,7 +1352,7 @@ function SettingsPanel({
                     onKeyDown={(e: any) => {
                       if (e.key === 'Enter') handleGenerateClick();
                     }}
-                    placeholder="e.g., a field of flowers"
+                    placeholder={t('e.g., a field of flowers')}
                     type="text"
                     value={prompt}
                   />

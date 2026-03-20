@@ -327,6 +327,8 @@ fn default_tagging_shortcuts_option() -> Option<Vec<String>> {
 pub struct AppSettings {
     pub last_root_path: Option<String>,
     #[serde(default)]
+    pub locale: Option<String>,
+    #[serde(default)]
     pub pinned_folders: Vec<String>,
     pub editor_preview_resolution: Option<u32>,
     #[serde(default)]
@@ -413,6 +415,7 @@ impl Default for AppSettings {
     fn default() -> Self {
         Self {
             last_root_path: None,
+            locale: None,
             pinned_folders: Vec::new(),
             editor_preview_resolution: Some(1920),
             enable_zoom_hifi: Some(true),

@@ -23,6 +23,7 @@ import {
 import { Invokes, SelectedImage, AppSettings } from '../../ui/AppProperties';
 import ExportPresetsList from '../../ui/ExportPresetsList';
 import { useExportSettings } from '../../../hooks/useExportSettings';
+import { useI18n } from '../../../i18n';
 
 interface ExportPanelProps {
   adjustments: Adjustments;
@@ -171,6 +172,7 @@ export default function ExportPanel({
   appSettings,
   onSettingsChange,
 }: ExportPanelProps) {
+  const { t } = useI18n();
   const {
     fileFormat,
     setFileFormat,
@@ -486,12 +488,12 @@ export default function ExportPanel({
 
   const canExport = numImages > 0;
   const isLut = fileFormat === FileFormats.Cube;
-  const itemLabel = isLut ? 'LUT' : 'Image';
+  const itemLabel = isLut ? t('LUT') : t('Image');
 
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-        <h2 className="text-xl font-bold text-primary text-shadow-shiny">Export</h2>
+        <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Export')}</h2>
       </div>
       <div className="flex-grow overflow-y-auto p-4 text-text-secondary space-y-6">
         {canExport ? (
@@ -503,7 +505,7 @@ export default function ExportPanel({
               onApplyPreset={handleApplyPreset}
             />
 
-            <Section title="File Settings">
+            <Section title={t('File Settings')}>
               <div className="grid grid-cols-3 gap-2">
                 {FILE_FORMATS.map((format: FileFormat) => (
                   <button
@@ -522,7 +524,7 @@ export default function ExportPanel({
                 <div className={isExporting ? 'opacity-50 pointer-events-none' : ''}>
                   <Slider
                     defaultValue={90}
-                    label={fileFormat === FileFormats.Jxl && jpegQuality === 100 ? 'Quality (Lossless)' : 'Quality'}
+                    label={fileFormat === FileFormats.Jxl && jpegQuality === 100 ? t('Quality (Lossless)') : t('Quality')}
                     max={100}
                     min={1}
                     onChange={(e) => setJpegQuality(parseInt(e.target.value))}
@@ -534,7 +536,7 @@ export default function ExportPanel({
             </Section>
 
             {isBatchMode && (
-              <Section title="File Naming">
+              <Section title={t('File Naming')}>
                 <input
                   className="w-full bg-bg-primary border border-surface rounded-md p-2 text-sm text-text-primary focus:ring-accent focus:border-accent"
                   disabled={isExporting}
@@ -560,9 +562,9 @@ export default function ExportPanel({
 
             {fileFormat !== FileFormats.Cube && (
               <>
-                <Section title="Image Sizing">
+                <Section title={t('Image Sizing')}>
                   <Switch
-                    label="Resize to Fit"
+                    label={t('Resize to Fit')}
                     checked={enableResize}
                     onChange={setEnableResize}
                     disabled={isExporting}
@@ -587,12 +589,12 @@ export default function ExportPanel({
                           type="number"
                           value={resizeValue}
                         />
-                        <span className="text-sm">pixels</span>
+                        <span className="text-sm">{t('common.labels.pixels')}</span>
                       </div>
                       <Switch
                         checked={dontEnlarge}
                         disabled={isExporting}
-                        label="Don't Enlarge"
+                        label={t("Don't Enlarge")}
                         onChange={setDontEnlarge}
                       />
                     </div>
@@ -601,17 +603,17 @@ export default function ExportPanel({
 
                 {fileFormat == FileFormats.Jpeg && (
                   <>
-                    <Section title="Metadata">
+                    <Section title={t('Metadata')}>
                       <Switch
                         checked={keepMetadata}
                         disabled={isExporting}
-                        label="Keep Original Metadata"
+                        label={t('Keep Original Metadata')}
                         onChange={setKeepMetadata}
                       />
                       {keepMetadata && (
                         <div className="pl-2 border-l-2 border-surface">
                           <Switch
-                            label="Remove GPS Data"
+                            label={t('Remove GPS Data')}
                             checked={stripGps}
                             onChange={setStripGps}
                             disabled={isExporting}
@@ -623,9 +625,9 @@ export default function ExportPanel({
                 )}
 
                 {isEditorContext && (
-                  <Section title="Masks">
+                  <Section title={t('Masks')}>
                     <Switch
-                      label="Export masks as separate files"
+                      label={t('Export masks as separate files')}
                       checked={exportMasks}
                       onChange={setExportMasks}
                       disabled={isExporting}
@@ -633,9 +635,9 @@ export default function ExportPanel({
                   </Section>
                 )}
 
-                <Section title="Watermark">
+                <Section title={t('Watermark')}>
                   <Switch
-                    label="Add Watermark"
+                    label={t('Add Watermark')}
                     checked={enableWatermark}
                     onChange={setEnableWatermark}
                     disabled={isExporting}
@@ -643,7 +645,7 @@ export default function ExportPanel({
                   {enableWatermark && (
                     <div className="space-y-4 pl-2 border-l-2 border-surface">
                       <ImagePicker
-                        label="Watermark Image"
+                        label={t('Watermark Image')}
                         imageName={watermarkPath ? watermarkPath.split(/[\\/]/).pop() || null : null}
                         onImageSelect={setWatermarkPath}
                         onClear={() => setWatermarkPath(null)}
@@ -658,7 +660,7 @@ export default function ExportPanel({
                             className="w-full"
                           />
                           <Slider
-                            label="Scale"
+                            label={t('Scale')}
                             min={1}
                             max={50}
                             step={1}
@@ -705,16 +707,16 @@ export default function ExportPanel({
             )}
           </>
         ) : (
-          <p className="text-center text-text-tertiary mt-4">No image selected for export.</p>
+          <p className="text-center text-text-tertiary mt-4">{t('No image selected for export.')}</p>
         )}
       </div>
 
       <div className="p-4 border-t border-surface flex-shrink-0 space-y-3">
         <div className="text-center text-xs text-text-tertiary h-4">
           {isEstimating ? (
-            <span className="italic">Estimating size...</span>
+            <span className="italic">{t('common.states.estimatingSize')}</span>
           ) : estimatedSize !== null ? (
-            <span>Estimated file size: ~{formatBytes(estimatedSize)}</span>
+            <span>{t('Estimated file size: ~{size}', { size: formatBytes(estimatedSize) })}</span>
           ) : null}
         </div>
         <Button

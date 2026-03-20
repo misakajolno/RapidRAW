@@ -17,6 +17,7 @@ import clsx from 'clsx';
 import { Orientation, SelectedImage } from '../../ui/AppProperties';
 import TransformModal from '../../modals/TransformModal';
 import LensCorrectionModal from '../../modals/LensCorrectionModal';
+import { useI18n } from '../../../i18n';
 
 const BASE_RATIO = 1.618;
 const ORIGINAL_RATIO = 0;
@@ -85,6 +86,7 @@ export default function CropPanel({
   setOverlayRotation: propSetOverlayRotation,
   onLiveRotationChange,
 }: CropPanelProps) {
+  const { t } = useI18n();
   const [customW, setCustomW] = useState('');
   const [customH, setCustomH] = useState('');
   const [isTransformModalOpen, setIsTransformModalOpen] = useState(false);
@@ -444,26 +446,26 @@ export default function CropPanel({
 
   const getOverlayTooltip = () => {
     const current = OVERLAYS.find((o) => o.id === activeOverlay);
-    if (!current) return 'Composition Overlay';
+    if (!current) return t('Composition Overlay');
     const isRotatable = ['goldenSpiral', 'goldenTriangle'].includes(activeOverlay);
     return `Overlay: ${current.name}${isRotatable ? ' (Shift+O to rotate)' : ''}`;
   };
 
   const getOrientationTooltip = () => {
     if (isOrientationToggleDisabled) {
-      return 'Switch orientation';
+      return t('Switch orientation');
     }
-    return orientation === Orientation.Vertical ? 'Switch to landscape' : 'Switch to portrait';
+    return orientation === Orientation.Vertical ? t('Switch to landscape') : t('Switch to portrait');
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-        <h2 className="text-xl font-bold text-primary text-shadow-shiny">Crop & Transform</h2>
+        <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Crop & Transform')}</h2>
         <button
           className="p-2 rounded-full hover:bg-surface transition-colors"
           onClick={handleReset}
-          data-tooltip="Reset Crop & Transform"
+          data-tooltip={t('Reset Crop & Transform')}
         >
           <RotateCcw size={18} />
         </button>
@@ -474,7 +476,7 @@ export default function CropPanel({
           <>
             <div className="space-y-4">
               <div className="flex justify-between items-center mb-3">
-                <p className="text-sm font-semibold text-text-primary">Aspect Ratio</p>
+                <p className="text-sm font-semibold text-text-primary">{t('Aspect Ratio')}</p>
                 <div className="flex items-center gap-2">
                   <button
                     className="p-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface transition-colors"
@@ -530,7 +532,7 @@ export default function CropPanel({
                       crop: null,
                     }));
                   }}
-                  data-tooltip="Enter custom aspect ratio"
+                  data-tooltip={t('Enter custom aspect ratio')}
                 >
                   Custom
                 </button>
@@ -549,8 +551,8 @@ export default function CropPanel({
                       onChange={handleCustomInputChange}
                       onFocus={handleCustomInputFocus}
                       onKeyDown={handleKeyDown}
-                      placeholder="W"
-                      data-tooltip="Width"
+                      placeholder={t('Width')}
+                      data-tooltip={t('Width')}
                       type="number"
                       value={customW}
                     />
@@ -563,8 +565,8 @@ export default function CropPanel({
                       onChange={handleCustomInputChange}
                       onFocus={handleCustomInputFocus}
                       onKeyDown={handleKeyDown}
-                      placeholder="H"
-                      data-tooltip="Height"
+                      placeholder={t('Height')}
+                      data-tooltip={t('Height')}
                       type="number"
                       value={customH}
                     />
@@ -574,7 +576,7 @@ export default function CropPanel({
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm mb-3 font-semibold text-text-primary">Rotation</p>
+              <p className="text-sm mb-3 font-semibold text-text-primary">{t('Rotation')}</p>
               <div className="bg-surface px-4 py-3 pb-4 rounded-lg">
                 <div className="flex justify-between items-center mb-3">
                   <span className="font-mono text-lg text-text-primary">{displayRotation.toFixed(1)}°</span>
@@ -635,7 +637,7 @@ export default function CropPanel({
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm mb-3 font-semibold text-text-primary">Orientation</p>
+              <p className="text-sm mb-3 font-semibold text-text-primary">{t('Orientation')}</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   className="flex flex-col items-center justify-center p-3 rounded-lg transition-colors bg-surface text-text-secondary hover:bg-card-active hover:text-text-primary"
@@ -643,7 +645,7 @@ export default function CropPanel({
                   data-tooltip="Rotate 90° counter-clockwise"
                 >
                   <RotateCcw size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Rotate Left</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Rotate Left')}</span>
                 </button>
                 <button
                   className="flex flex-col items-center justify-center p-3 rounded-lg transition-colors bg-surface text-text-secondary hover:bg-card-active hover:text-text-primary"
@@ -651,7 +653,7 @@ export default function CropPanel({
                   data-tooltip="Rotate 90° clockwise"
                 >
                   <RotateCw size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Rotate Right</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Rotate Right')}</span>
                 </button>
                 <button
                   className={clsx(
@@ -669,7 +671,7 @@ export default function CropPanel({
                   data-tooltip="Flip image horizontally"
                 >
                   <FlipHorizontal size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Flip Horiz</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Flip Horiz')}</span>
                 </button>
                 <button
                   className={clsx(
@@ -682,13 +684,13 @@ export default function CropPanel({
                   data-tooltip="Flip image vertically"
                 >
                   <FlipVertical size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Flip Vert</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Flip Vert')}</span>
                 </button>
               </div>
             </div>
 
             <div className="space-y-4">
-              <p className="text-sm mb-3 font-semibold text-text-primary">Geometry</p>
+              <p className="text-sm mb-3 font-semibold text-text-primary">{t('Geometry')}</p>
               <div className="grid grid-cols-2 gap-2">
                 <button
                   className="flex flex-col items-center justify-center p-3 rounded-lg transition-colors bg-surface text-text-secondary hover:bg-card-active hover:text-text-primary group"
@@ -696,7 +698,7 @@ export default function CropPanel({
                   data-tooltip="Perspective and keystone correction"
                 >
                   <Scan size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Transform</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Transform')}</span>
                 </button>
                 <button
                   className="flex flex-col items-center justify-center p-3 rounded-lg transition-colors bg-surface text-text-secondary hover:bg-card-active hover:text-text-primary group"
@@ -704,13 +706,13 @@ export default function CropPanel({
                   data-tooltip="Lens distortion correction"
                 >
                   <Aperture size={20} className="transition-none" />
-                  <span className="text-xs mt-1.5 transition-none">Lens</span>
+                  <span className="text-xs mt-1.5 transition-none">{t('Lens')}</span>
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <p className="text-center text-text-tertiary mt-4">No image selected.</p>
+          <p className="text-center text-text-tertiary mt-4">{t('common.states.noImageSelected')}</p>
         )}
       </div>
 

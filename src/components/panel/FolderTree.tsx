@@ -2,6 +2,7 @@ import { Folder, FolderOpen, ChevronLeft, ChevronRight, ChevronUp, ChevronDown, 
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useMemo, useEffect } from 'react';
+import { useI18n } from '../../i18n';
 
 export interface FolderTree {
   children: FolderTree[];
@@ -270,6 +271,7 @@ export default function FolderTree({
   showImageCounts,
   isInstantTransition,
 }: FolderTreeProps) {
+  const { t } = useI18n();
   const [searchQuery, setSearchQuery] = useState('');
   const [isHovering, setIsHovering] = useState(false);
 
@@ -344,7 +346,7 @@ export default function FolderTree({
         <button
           className="absolute top-1/2 -translate-y-1/2 right-1 w-6 h-10 hover:bg-card-active rounded-md flex items-center justify-center z-30"
           onClick={() => setIsVisible(true)}
-          data-tooltip="Expand"
+          data-tooltip={t('folderTree.expand')}
         >
           <ChevronRight size={16} />
         </button>
@@ -363,7 +365,7 @@ export default function FolderTree({
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
                     className="bg-surface rounded-md hover:bg-card-active flex items-center justify-center flex-shrink-0 overflow-hidden transition-colors"
                     onClick={() => setIsVisible(false)}
-                    data-tooltip="Collapse"
+                    data-tooltip={t('folderTree.collapse')}
                   >
                     <ChevronLeft size={17.5} className="text-text-secondary flex-shrink-0" />
                   </motion.button>
@@ -373,7 +375,7 @@ export default function FolderTree({
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
                 <input
                   type="text"
-                  placeholder="Search folders..."
+                  placeholder={t('folderTree.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-surface border border-transparent rounded-md pl-9 pr-8 py-2 text-sm focus:outline-none"
@@ -382,7 +384,7 @@ export default function FolderTree({
                   <button
                     onClick={() => setSearchQuery('')}
                     className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-card-active"
-                    data-tooltip="Clear search"
+                    data-tooltip={t('folderTree.clearSearch')}
                   >
                     <X size={16} className="text-text-secondary" />
                   </button>
@@ -396,7 +398,7 @@ export default function FolderTree({
               <>
                 <div>
                   <SectionHeader
-                    title="Pinned"
+                    title={t('folderTree.pinned')}
                     isOpen={isPinnedOpen}
                     onToggle={() => onActiveSectionChange(isPinnedOpen ? null : 'pinned')}
                   />
@@ -437,7 +439,7 @@ export default function FolderTree({
               <>
                 <div>
                   <SectionHeader
-                    title="Base Folder"
+                    title={t('folderTree.baseFolder')}
                     isOpen={isCurrentOpen}
                     onToggle={() => onActiveSectionChange(isCurrentOpen ? null : 'current')}
                   />
@@ -472,15 +474,15 @@ export default function FolderTree({
             )}
 
             {!filteredTree && !hasVisiblePinnedTrees && isSearching && (
-              <p className="text-text-secondary text-sm p-2 text-center">No folders found.</p>
+              <p className="text-text-secondary text-sm p-2 text-center">{t('folderTree.noFoldersFound')}</p>
             )}
 
             {!tree && pinnedFolderTrees.length === 0 && !isSearching && (
               <div className="pt-1">
                 {isLoading ? (
-                  <p className="text-text-secondary text-sm animate-pulse p-2">Loading folder structure...</p>
+                  <p className="text-text-secondary text-sm animate-pulse p-2">{t('folderTree.loadingStructure')}</p>
                 ) : (
-                  <p className="text-text-secondary text-sm p-2">Open a folder to see its structure.</p>
+                  <p className="text-text-secondary text-sm p-2">{t('folderTree.openFolderPrompt')}</p>
                 )}
               </div>
             )}

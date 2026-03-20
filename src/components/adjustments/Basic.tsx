@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import Slider from '../ui/Slider';
 import { Adjustments, BasicAdjustment } from '../../utils/adjustments';
 import { useEffect, useRef, useState } from 'react';
+import { useI18n } from '../../i18n';
 
 interface BasicAdjustmentsProps {
   adjustments: Adjustments;
@@ -31,6 +32,7 @@ const ToneMapperSwitch = ({
   onExposureChange,
   onDragStateChange,
 }: ToneMapperSwitchProps) => {
+  const { t } = useI18n();
   const [bubbleStyle, setBubbleStyle] = useState({});
   const isInitialAnimation = useRef(true);
   const [isLabelHovered, setIsLabelHovered] = useState(false);
@@ -85,7 +87,7 @@ const ToneMapperSwitch = ({
               isLabelHovered ? 'opacity-0' : 'opacity-100'
             }`}
           >
-            Tone Mapper
+            {t('Tone Mapper')}
           </span>
           <span
             aria-hidden={!isLabelHovered}
@@ -93,7 +95,7 @@ const ToneMapperSwitch = ({
               isLabelHovered ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            Reset
+            {t('Reset')}
           </span>
         </div>
       </div>
@@ -108,7 +110,7 @@ const ToneMapperSwitch = ({
           {toneMapperOptions.map((mapper) => (
             <button
               key={mapper.id}
-              data-tooltip={mapper.title}
+              data-tooltip={t(mapper.title)}
               onClick={() => onMapperChange(mapper.id)}
               className={clsx(
                 'relative flex-1 flex items-center justify-center gap-2 px-3 p-1.5 text-sm font-medium rounded-md transition-colors',
@@ -119,13 +121,13 @@ const ToneMapperSwitch = ({
               )}
               style={{ WebkitTapHighlightColor: 'transparent' }}
             >
-              <span className="relative z-10 flex items-center">{mapper.label}</span>
+              <span className="relative z-10 flex items-center">{mapper.label === 'AgX' ? mapper.label : t(mapper.label)}</span>
             </button>
           ))}
         </div>
         <div className="mt-2.5 px-1">
           <Slider
-            label="Exposure"
+            label={t('Exposure')}
             max={5}
             min={-5}
             onChange={(e: any) => onExposureChange(parseFloat(e.target.value))}
@@ -146,6 +148,7 @@ export default function BasicAdjustments({
   isForMask = false,
   onDragStateChange,
 }: BasicAdjustmentsProps) {
+  const { t } = useI18n();
   const handleAdjustmentChange = (key: BasicAdjustment, value: any) => {
     const numericValue = parseFloat(value);
     setAdjustments((prev: Partial<Adjustments>) => ({ ...prev, [key]: numericValue }));
@@ -161,7 +164,7 @@ export default function BasicAdjustments({
   return (
     <div>
       <Slider
-        label="Brightness"
+        label={t('Brightness')}
         max={5}
         min={-5}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Brightness, e.target.value)}
@@ -170,7 +173,7 @@ export default function BasicAdjustments({
         onDragStateChange={onDragStateChange}
       />
       <Slider
-        label="Contrast"
+        label={t('Contrast')}
         max={100}
         min={-100}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Contrast, e.target.value)}
@@ -179,7 +182,7 @@ export default function BasicAdjustments({
         onDragStateChange={onDragStateChange}
       />
       <Slider
-        label="Highlights"
+        label={t('Highlights')}
         max={100}
         min={-100}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Highlights, e.target.value)}
@@ -188,7 +191,7 @@ export default function BasicAdjustments({
         onDragStateChange={onDragStateChange}
       />
       <Slider
-        label="Shadows"
+        label={t('Shadows')}
         max={100}
         min={-100}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Shadows, e.target.value)}
@@ -197,7 +200,7 @@ export default function BasicAdjustments({
         onDragStateChange={onDragStateChange}
       />
       <Slider
-        label="Whites"
+        label={t('Whites')}
         max={100}
         min={-100}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Whites, e.target.value)}
@@ -206,7 +209,7 @@ export default function BasicAdjustments({
         onDragStateChange={onDragStateChange}
       />
       <Slider
-        label="Blacks"
+        label={t('Blacks')}
         max={100}
         min={-100}
         onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Blacks, e.target.value)}
@@ -217,7 +220,7 @@ export default function BasicAdjustments({
 
       {isForMask ? (
         <Slider
-          label="Exposure"
+          label={t('Exposure')}
           max={5}
           min={-5}
           onChange={(e: any) => handleAdjustmentChange(BasicAdjustment.Exposure, e.target.value)}

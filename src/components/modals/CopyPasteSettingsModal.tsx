@@ -6,6 +6,7 @@ import Button from '../ui/Button';
 import Switch from '../ui/Switch';
 import Text from '../ui/Text';
 import { TextVariants } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface CopyPasteSettingsModalProps {
   isOpen: boolean;
@@ -35,6 +36,7 @@ interface PasteModeSwitchProps {
 }
 
 const PasteModeSwitch = ({ selectedMode, onModeChange, isVisible }: PasteModeSwitchProps) => {
+  const { t } = useI18n();
   const [buttonRefs, setButtonRefs] = useState<Map<string, HTMLButtonElement>>(new Map());
   const [bubbleStyle, setBubbleStyle] = useState({});
   const containerRef = useRef<HTMLDivElement>(null);
@@ -106,7 +108,7 @@ const PasteModeSwitch = ({ selectedMode, onModeChange, isVisible }: PasteModeSwi
           )}
           style={{ WebkitTapHighlightColor: 'transparent' }}
         >
-          <span className="relative z-10 flex items-center">{option.label}</span>
+          <span className="relative z-10 flex items-center">{t(option.label)}</span>
         </button>
       ))}
     </div>
@@ -114,6 +116,7 @@ const PasteModeSwitch = ({ selectedMode, onModeChange, isVisible }: PasteModeSwi
 };
 
 export default function CopyPasteSettingsModal({ isOpen, onClose, onSave, settings }: CopyPasteSettingsModalProps) {
+  const { t } = useI18n();
   const [isMounted, setIsMounted] = useState(false);
   const [show, setShow] = useState(false);
   const [localSettings, setLocalSettings] = useState<CopyPasteSettings>(settings || DEFAULT_SETTINGS);
@@ -189,12 +192,12 @@ export default function CopyPasteSettingsModal({ isOpen, onClose, onSave, settin
         onClick={(e) => e.stopPropagation()}
       >
         <Text variant={TextVariants.title} className="mb-4">
-          Copy & Paste Settings
+          {t('Copy & Paste Settings')}
         </Text>
         <div className="flex-grow overflow-y-auto pr-2 -mr-2 space-y-6">
           <div>
             <Text variant={TextVariants.heading} className="block mb-2">
-              Paste Mode
+              {t('Paste Mode')}
             </Text>
             <PasteModeSwitch
               selectedMode={localSettings.mode}
@@ -202,29 +205,29 @@ export default function CopyPasteSettingsModal({ isOpen, onClose, onSave, settin
               isVisible={show}
             />
             <Text variant={TextVariants.small} className="mt-2">
-              <b>Merge:</b> Adds your copied changes, leaving other settings untouched.
+              <b>{t('Merge')}:</b> {t('Adds your copied changes, leaving other settings untouched.')}
               <br />
-              <b>Replace:</b> Overwrites all selected settings, resetting the rest to their defaults.
+              <b>{t('Replace')}:</b> {t('Overwrites all selected settings, resetting the rest to their defaults.')}
             </Text>
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-2">
-              <Text variant={TextVariants.heading}>Included Adjustments</Text>
+              <Text variant={TextVariants.heading}>{t('Included Adjustments')}</Text>
               <div className="flex gap-2">
                 <Button
                   className="px-4 py-2 rounded-md text-text-secondary hover:bg-surface transition-colors"
                   size="sm"
                   onClick={handleSelectAll}
                 >
-                  Select All
+                  {t('Select All')}
                 </Button>
                 <Button
                   className="px-4 py-2 rounded-md text-text-secondary hover:bg-surface transition-colors"
                   size="sm"
                   onClick={handleSelectNone}
                 >
-                  Select None
+                  {t('Select None')}
                 </Button>
               </div>
             </div>
@@ -233,12 +236,12 @@ export default function CopyPasteSettingsModal({ isOpen, onClose, onSave, settin
                 {Object.entries(ADJUSTMENT_SECTIONS).map(([section, keys]) => (
                   <div key={section}>
                     <Text variant={TextVariants.heading} className="mb-2">
-                      {capitalize(section)}
+                      {t(capitalize(section))}
                     </Text>
                     {keys.map((key) => (
                       <div key={key} className="mb-1.5 last:mb-0">
                         <Switch
-                          label={formatLabel(key)}
+                          label={t(formatLabel(key))}
                           checked={localSettings.includedAdjustments.includes(key)}
                           onChange={(checked) => handleCheckboxChange(key, checked)}
                           trackClassName="bg-surface"
@@ -257,9 +260,9 @@ export default function CopyPasteSettingsModal({ isOpen, onClose, onSave, settin
             className="px-4 py-2 rounded-md text-text-secondary bg-surface hover:bg-surface transition-colors"
             onClick={onClose}
           >
-            Cancel
+            {t('common.actions.cancel')}
           </Button>
-          <Button onClick={handleSave}>Save</Button>
+          <Button onClick={handleSave}>{t('common.actions.save')}</Button>
         </div>
       </div>
     </div>

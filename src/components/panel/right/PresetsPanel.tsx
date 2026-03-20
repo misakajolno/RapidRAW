@@ -35,6 +35,7 @@ import RenameFolderModal from '../../modals/RenameFolderModal';
 import Button from '../../ui/Button';
 import { Adjustments, INITIAL_ADJUSTMENTS } from '../../../utils/adjustments';
 import { Invokes, OPTION_SEPARATOR, Panel, Preset, SelectedImage } from '../../ui/AppProperties';
+import { useI18n } from '../../../i18n';
 
 interface DroppableFolderItemProps {
   children: any;
@@ -94,13 +95,14 @@ const itemVariants = {
 };
 
 function PresetItemDisplay({ preset, previewUrl, isGeneratingPreviews }: PresetItemDisplayProps) {
+  const { t } = useI18n();
   return (
     <div className="flex items-center gap-2 p-2 rounded-lg bg-surface cursor-grabbing">
       <div className="w-20 h-14 bg-bg-tertiary rounded-md flex items-center justify-center flex-shrink-0">
         {isGeneratingPreviews && !previewUrl ? (
           <Loader2 size={20} className="animate-spin text-text-secondary" />
         ) : previewUrl ? (
-          <img src={previewUrl} alt={`${preset.name} preview`} className="w-full h-full object-cover rounded-md" />
+          <img src={previewUrl} alt={t('{name} preview', { name: preset.name })} className="w-full h-full object-cover rounded-md" />
         ) : (
           <Loader2 size={20} className="animate-spin text-text-secondary" />
         )}
@@ -275,6 +277,7 @@ export default function PresetsPanel({
     updatePreset,
   } = usePresets(adjustments);
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
   const [previews, setPreviews] = useState<Record<string, string | null>>({});
   const [isGeneratingPreviews, setIsGeneratingPreviews] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -645,12 +648,12 @@ export default function PresetsPanel({
     try {
       const selectedPath = await openDialog({
         filters: [
-          { name: 'All Preset Files', extensions: ['rrpreset', 'xmp', 'lrtemplate'] },
-          { name: 'RapidRAW Preset', extensions: ['rrpreset'] },
-          { name: 'Legacy Preset', extensions: ['xmp', 'lrtemplate'] },
+          { name: t('All Preset Files'), extensions: ['rrpreset', 'xmp', 'lrtemplate'] },
+          { name: t('RapidRAW Preset'), extensions: ['rrpreset'] },
+          { name: t('Legacy Preset'), extensions: ['xmp', 'lrtemplate'] },
         ],
         multiple: false,
-        title: 'Import Presets',
+        title: t('Import Presets'),
       });
 
       if (typeof selectedPath === 'string') {
@@ -678,8 +681,8 @@ export default function PresetsPanel({
     try {
       const filePath = await saveDialog({
         defaultPath: `${name}.rrpreset`.replace(/[<>:"/\\|?*]/g, '_'),
-        filters: [{ name: 'Preset File', extensions: ['rrpreset'] }],
-        title: `Export ${isFolder ? 'Folder' : 'Preset'}`,
+        filters: [{ name: t('Preset File'), extensions: ['rrpreset'] }],
+        title: isFolder ? t('Export Folder') : t('Export Preset'),
       });
 
       if (filePath) {
@@ -697,8 +700,8 @@ export default function PresetsPanel({
     try {
       const filePath = await saveDialog({
         defaultPath: 'all_presets.rrpreset',
-        filters: [{ name: 'Preset File', extensions: ['rrpreset'] }],
-        title: 'Export All Presets',
+        filters: [{ name: t('Preset File'), extensions: ['rrpreset'] }],
+        title: t('Export All Presets'),
       });
 
       if (filePath) {
@@ -721,19 +724,19 @@ export default function PresetsPanel({
       options = [
         {
           icon: Edit,
-          label: 'Rename Folder',
+          label: t('Rename Folder'),
           onClick: () => setRenameFolderState({ isOpen: true, folder: data }),
         },
         {
           icon: FileDown,
-          label: 'Export Folder',
+          label: t('Export Folder'),
           onClick: () => handleExport(item),
         },
         { type: OPTION_SEPARATOR },
         {
           icon: Trash2,
           isDestructive: true,
-          label: 'Delete Folder',
+          label: t('Delete Folder'),
           onClick: () => handleDeleteItem(data?.id ?? null, true),
         },
       ];
@@ -741,7 +744,7 @@ export default function PresetsPanel({
       options = [
         {
           icon: RefreshCw,
-          label: 'Overwrite Preset',
+          label: t('Overwrite Preset'),
 
           onClick: async () => {
             const updated = updatePreset(data?.id ?? null);
@@ -753,12 +756,12 @@ export default function PresetsPanel({
         { type: OPTION_SEPARATOR },
         {
           icon: Edit,
-          label: 'Rename Preset',
+          label: t('Rename Preset'),
           onClick: () => setRenamePresetState({ isOpen: true, preset: data ?? null }),
         },
         {
           icon: CopyPlus,
-          label: 'Duplicate Preset',
+          label: t('Duplicate Preset'),
           onClick: async () => {
             const duplicated = duplicatePreset(data?.id ?? null);
             if (duplicated) {
@@ -768,14 +771,14 @@ export default function PresetsPanel({
         },
         {
           icon: FileDown,
-          label: 'Export Preset',
+          label: t('Export Preset'),
           onClick: () => handleExport(item),
         },
         { type: OPTION_SEPARATOR },
         {
           icon: Trash2,
           isDestructive: true,
-          label: 'Delete Preset',
+          label: t('Delete Preset'),
           onClick: () => handleDeleteItem(data?.id ?? null, false),
         },
       ];
@@ -792,19 +795,19 @@ export default function PresetsPanel({
     const options = [
       {
         icon: Plus,
-        label: 'New Preset',
+        label: t('New Preset'),
         onClick: () => setIsAddModalOpen(true),
       },
       {
         icon: FolderPlus,
-        label: 'New Folder',
+        label: t('New Folder'),
         onClick: () => setIsAddFolderModalOpen(true),
       },
       { type: OPTION_SEPARATOR },
       {
         disabled: presets.length === 0,
         icon: SortAsc,
-        label: 'Sort All Alphabetically',
+        label: t('Sort All Alphabetically'),
         onClick: sortAllPresetsAlphabetically,
       },
     ];
@@ -818,12 +821,12 @@ export default function PresetsPanel({
     <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="flex flex-col h-full">
         <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
-          <h2 className="text-xl font-bold text-primary text-shadow-shiny">Presets</h2>
+          <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Presets')}</h2>
           <div className="flex items-center gap-1">
             <button
               className="p-2 rounded-full hover:bg-surface transition-colors"
               onClick={onNavigateToCommunity}
-              data-tooltip="Explore Community Presets"
+              data-tooltip={t('Explore Community Presets')}
             >
               <Users size={18} />
             </button>
@@ -831,7 +834,7 @@ export default function PresetsPanel({
               className="p-2 rounded-full hover:bg-surface transition-colors"
               disabled={isLoading}
               onClick={handleImportPresets}
-              data-tooltip="Import presets from .rrpreset file"
+              data-tooltip={t('Import presets from .rrpreset file')}
             >
               <FileUp size={18} />
             </button>
@@ -839,7 +842,7 @@ export default function PresetsPanel({
               className="p-2 rounded-full hover:bg-surface transition-colors"
               disabled={presets.length === 0 || isLoading}
               onClick={handleExportAllPresets}
-              data-tooltip="Export all presets to .rrpreset file"
+              data-tooltip={t('Export all presets to .rrpreset file')}
             >
               <FileDown size={18} />
             </button>
@@ -847,7 +850,7 @@ export default function PresetsPanel({
               className="p-2 rounded-full hover:bg-surface transition-colors"
               disabled={isLoading}
               onClick={() => setIsAddModalOpen(true)}
-              data-tooltip="Save as new preset"
+              data-tooltip={t('Save as new preset')}
             >
               <Plus size={18} />
             </button>
@@ -863,17 +866,17 @@ export default function PresetsPanel({
         >
           {isLoading && presets.length === 0 && (
             <div className="text-center text-text-secondary py-2">
-              <Loader2 size={16} className="animate-spin inline-block mr-2" /> Loading Presets...
+              <Loader2 size={16} className="animate-spin inline-block mr-2" /> {t('Loading Presets...')}
             </div>
           )}
           {!isLoading && presets.length === 0 ? (
             <div className="text-center text-text-secondary py-8 flex flex-col items-center gap-4">
               <p className="max-w-xs">
-                No presets saved yet. Create your own, import from a file, or explore community presets.
+                {t('No presets saved yet. Create your own, import from a file, or explore community presets.')}
               </p>
               <Button variant="secondary" onClick={onNavigateToCommunity}>
                 <Users size={16} className="mr-2" />
-                Get Community Presets
+                {t('Get Community Presets')}
               </Button>
             </div>
           ) : (

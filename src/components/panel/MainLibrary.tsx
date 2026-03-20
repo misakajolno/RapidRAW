@@ -43,6 +43,7 @@ import { Color, COLOR_LABELS } from '../../utils/adjustments';
 import { ImportState, Status } from '../ui/ExportImportProperties';
 import Text from '../ui/Text';
 import { TextColors, TextVariants, TextWeights } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface DropdownMenuProps {
   buttonContent: any;
@@ -235,6 +236,7 @@ const groupImagesByFolder = (images: ImageFile[], rootPath: string | null) => {
 };
 
 function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCriteria }: SearchInputProps) {
+  const { t } = useI18n();
   const [isSearchActive, setIsSearchActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -318,12 +320,12 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
   const isActive = isSearchActive || tags.length > 0 || !!text;
   const placeholderText =
     isIndexing && indexingProgress.total > 0
-      ? `Indexing... (${indexingProgress.current}/${indexingProgress.total})`
+      ? t('Indexing... ({current}/{total})', { current: indexingProgress.current, total: indexingProgress.total })
       : isIndexing
-        ? 'Indexing Images...'
+        ? t('Indexing Images...')
         : tags.length > 0
-          ? 'Add another tag...'
-          : 'Search by tag or filename...';
+          ? t('Add another tag...')
+          : t('Search by tag or filename...');
 
   const INACTIVE_WIDTH = 48;
   const PADDING_AND_ICONS_WIDTH = 105;
@@ -350,7 +352,7 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
           }
           inputRef.current?.focus();
         }}
-        data-tooltip="Search"
+        data-tooltip={t('Search')}
       >
         <Search className="w-4 h-4" />
       </button>
@@ -414,7 +416,7 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
               className="flex-shrink-0 bg-bg-primary px-2 py-1 rounded-md whitespace-nowrap"
             >
               <Text variant={TextVariants.small}>
-                Separate tags with <kbd className="font-sans font-semibold">,</kbd>
+                {t('Separate tags with')} <kbd className="font-sans font-semibold">,</kbd>
               </Text>
             </motion.div>
           )}
@@ -424,7 +426,7 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
           <button
             onClick={toggleMode}
             className="p-1.5 rounded-md hover:bg-bg-primary w-10 flex-shrink-0"
-            data-tooltip={`Match ${mode === 'AND' ? 'ALL' : 'ANY'} tags`}
+            data-tooltip={mode === 'AND' ? t('Match ALL tags') : t('Match ANY tags')}
           >
             <Text variant={TextVariants.small} color={TextColors.primary} weight={TextWeights.semibold}>
               {mode}
@@ -435,7 +437,7 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
           <button
             onClick={clearSearch}
             className="p-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-primary flex-shrink-0"
-            data-tooltip="Clear search"
+            data-tooltip={t('Clear search')}
           >
             <X className="h-5 w-5" />
           </button>
@@ -451,6 +453,7 @@ function SearchInput({ indexingProgress, isIndexing, searchCriteria, setSearchCr
 }
 
 function ColorFilterOptions({ filterCriteria, setFilterCriteria }: FilterOptionProps) {
+  const { t } = useI18n();
   const [lastClickedColor, setLastClickedColor] = useState<string | null>(null);
   const allColors = useMemo(() => [...COLOR_LABELS, { name: 'none', color: '#9ca3af' }], []);
 
@@ -485,12 +488,12 @@ function ColorFilterOptions({ filterCriteria, setFilterCriteria }: FilterOptionP
   return (
     <div>
       <Text as="div" variant={TextVariants.small} weight={TextWeights.semibold} className="px-3 py-2 uppercase">
-        Filter by Color Label
+        {t('Filter by Color Label')}
       </Text>
       <div className="flex flex-wrap gap-3 px-3 py-2">
         {allColors.map((color: Color) => {
           const isSelected = (filterCriteria.colors || []).includes(color.name);
-          const title = color.name === 'none' ? 'No Label' : color.name.charAt(0).toUpperCase() + color.name.slice(1);
+          const title = color.name === 'none' ? t('No Label') : color.name.charAt(0).toUpperCase() + color.name.slice(1);
           return (
             <button
               key={color.name}
@@ -1208,6 +1211,7 @@ export default function MainLibrary({
   thumbnailSize,
   onNavigateToCommunity,
 }: MainLibraryProps) {
+  const { t } = useI18n();
   const [showSettings, setShowSettings] = useState(false);
   const [appVersion, setAppVersion] = useState('');
   const [, setSupportedTypes] = useState<SupportedTypes | null>(null);
@@ -1489,12 +1493,12 @@ export default function MainLibrary({
                 >
                   {hasLastPath ? (
                     <>
-                      Welcome back!
+                      {t('library.welcomeBackTitle')}
                       <br />
-                      Continue where you left off or start a new session.
+                      {t('library.welcomeBackDescription')}
                     </>
                   ) : (
-                    'A blazingly fast, GPU-accelerated RAW image editor. Open a folder to begin.'
+                    t('library.introDescription')
                   )}
                 </Text>
                 <div className="flex flex-col w-full max-w-xs gap-4">
@@ -1504,7 +1508,7 @@ export default function MainLibrary({
                       onClick={onContinueSession}
                       size="lg"
                     >
-                      <RefreshCw size={20} className="mr-2" /> Continue Session
+                      <RefreshCw size={20} className="mr-2" /> {t('common.actions.continueSession')}
                     </Button>
                   )}
                   <div className="flex items-center gap-2">
@@ -1516,13 +1520,13 @@ export default function MainLibrary({
                       size="lg"
                     >
                       <Folder size={20} className="mr-2" />
-                      {hasLastPath ? 'Change Folder' : 'Open Folder'}
+                      {hasLastPath ? t('common.actions.changeFolder') : t('common.actions.openFolder')}
                     </Button>
                     <Button
                       className="px-3 bg-surface text-text-primary shadow-none h-11"
                       onClick={() => setShowSettings(true)}
                       size="lg"
-                      data-tooltip="Go to Settings"
+                      data-tooltip={t('library.openSettingsTooltip')}
                       variant="ghost"
                     >
                       <Settings size={20} />
@@ -1532,7 +1536,7 @@ export default function MainLibrary({
               </div>
               <Text variant={TextVariants.small} as="div" className="absolute bottom-8 left-8 lg:left-16 space-y-1">
                 <p>
-                  Images by{' '}
+                  {t('library.imagesBy')}{' '}
                   <a
                     href="https://instagram.com/timonkaech.photography"
                     className="hover:underline"
@@ -1556,13 +1560,13 @@ export default function MainLibrary({
                         }}
                         data-tooltip={
                           isUpdateAvailable
-                            ? `Click to download version ${latestVersion}`
-                            : `You are on the latest version`
+                            ? t('library.downloadVersionTooltip', { version: latestVersion })
+                            : t('library.latestVersionTooltip')
                         }
                       >
-                        <span className={isUpdateAvailable ? 'group-hover:hidden' : ''}>Version {appVersion}</span>
+                        <span className={isUpdateAvailable ? 'group-hover:hidden' : ''}>{t('library.versionLabel', { version: appVersion })}</span>
                         {isUpdateAvailable && (
-                          <span className="hidden group-hover:inline text-yellow-400">New version available!</span>
+                          <span className="hidden group-hover:inline text-yellow-400">{t('library.newVersionAvailable')}</span>
                         )}
                       </span>
                     </p>
@@ -1574,16 +1578,16 @@ export default function MainLibrary({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Donate on Ko-Fi
+                        {t('library.donateKoFi')}
                       </a>
-                      <span className="mx-1">or</span>
+                      <span className="mx-1">/</span>
                       <a
                         href="https://github.com/CyberTimon/RapidRAW"
                         className="hover:underline"
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        Contribute on GitHub
+                        {t('library.contributeGithub')}
                       </a>
                     </p>
                   </div>
@@ -1603,7 +1607,7 @@ export default function MainLibrary({
     >
       <header className="p-4 flex-shrink-0 flex justify-between items-center border-b border-border-color gap-4">
         <div className="min-w-0">
-          <Text variant={TextVariants.headline}>Library</Text>
+          <Text variant={TextVariants.headline}>{t('common.labels.library')}</Text>
           <div className="flex items-center gap-2">
             {currentFolderPath ? (
               <Text className="truncate">{currentFolderPath}</Text>
@@ -1624,20 +1628,20 @@ export default function MainLibrary({
             <Text as="div" color={TextColors.accent} className="flex items-center gap-2 animate-pulse">
               <FolderInput size={16} />
               <span>
-                Importing... ({importState.progress?.current}/{importState.progress?.total})
+                {t('library.importingProgress', { current: importState.progress?.current, total: importState.progress?.total })}
               </span>
             </Text>
           )}
           {importState.status === Status.Success && (
             <Text as="div" color={TextColors.success} className="flex items-center gap-2">
               <Check size={16} />
-              <span>Import Complete!</span>
+              <span>{t('library.importComplete')}</span>
             </Text>
           )}
           {importState.status === Status.Error && (
             <Text as="div" color={TextColors.error} className="flex items-center gap-2">
               <AlertTriangle size={16} />
-              <span>Import Failed!</span>
+              <span>{t('library.importFailed')}</span>
             </Text>
           )}
           <SearchInput
@@ -1662,21 +1666,21 @@ export default function MainLibrary({
           <Button
             className="h-12 w-12 bg-surface text-text-primary shadow-none p-0 flex items-center justify-center"
             onClick={onNavigateToCommunity}
-            data-tooltip="Community Presets"
+            data-tooltip={t('Community Presets')}
           >
             <Users className="w-8 h-8" />
           </Button>
           <Button
             className="h-12 w-12 bg-surface text-text-primary shadow-none p-0 flex items-center justify-center"
             onClick={onOpenFolder}
-            data-tooltip="Open another folder"
+            data-tooltip={t('Open another folder')}
           >
             <Folder className="w-8 h-8" />
           </Button>
           <Button
             className="h-12 w-12 bg-surface text-text-primary shadow-none p-0 flex items-center justify-center"
             onClick={onGoHome}
-            data-tooltip="Go to Home"
+            data-tooltip={t('Go to Home')}
           >
             <Home className="w-8 h-8" />
           </Button>
@@ -1765,16 +1769,16 @@ export default function MainLibrary({
           <Loader2 className="h-12 w-12 text-secondary animate-spin mb-4" />
           <Text variant={TextVariants.heading} color={TextColors.secondary}>
             {aiModelDownloadStatus
-              ? `Downloading ${aiModelDownloadStatus}...`
+              ? t('Downloading {status}...', { status: aiModelDownloadStatus })
               : isIndexing && indexingProgress.total > 0
-                ? `Indexing images... (${indexingProgress.current}/${indexingProgress.total})`
+                ? t('Indexing images... ({current}/{total})', { current: indexingProgress.current, total: indexingProgress.total })
                 : importState.status === Status.Importing &&
                     importState?.progress?.total &&
                     importState.progress.total > 0
-                  ? `Importing images... (${importState.progress?.current}/${importState.progress?.total})`
-                  : 'Processing images...'}
+                  ? t('Importing images... ({current}/{total})', { current: importState.progress?.current, total: importState.progress?.total })
+                  : t('Processing images...')}
           </Text>
-          <Text className="mt-2">This may take a moment.</Text>
+          <Text className="mt-2">{t('library.thisMayTakeAMoment')}</Text>
         </div>
       ) : searchCriteria.tags.length > 0 || searchCriteria.text ? (
         <div
@@ -1783,17 +1787,17 @@ export default function MainLibrary({
         >
           <Search className="h-12 w-12 text-secondary mb-4" />
           <Text variant={TextVariants.heading} color={TextColors.secondary}>
-            No Results Found
+            {t('No Results Found')}
           </Text>
           <Text className="mt-2 max-w-sm">
-            Could not find an image based on filename or tags.
-            {!appSettings?.enableAiTagging && ' For a more comprehensive search, enable automatic tagging in Settings.'}
+            {t('Could not find an image based on filename or tags.')}
+            {!appSettings?.enableAiTagging && t('For a more comprehensive search, enable automatic tagging in Settings.')}
           </Text>
         </div>
       ) : (
         <div className="flex-1 flex flex-col items-center justify-center" onContextMenu={onEmptyAreaContextMenu}>
           <SlidersHorizontal className="h-12 w-12 mb-4 text-text-secondary" />
-          <Text>No images found that match your filter.</Text>
+          <Text>{t('library.noImagesFound')}</Text>
         </div>
       )}
     </div>
