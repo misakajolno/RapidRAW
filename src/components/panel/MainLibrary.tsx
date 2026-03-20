@@ -1769,7 +1769,7 @@ export default function MainLibrary({
           <Loader2 className="h-12 w-12 text-secondary animate-spin mb-4" />
           <Text variant={TextVariants.heading} color={TextColors.secondary}>
             {aiModelDownloadStatus
-              ? t('Downloading {status}...', { status: aiModelDownloadStatus })
+              ? t('Downloading {status}...', { status: t(aiModelDownloadStatus) })
               : isIndexing && indexingProgress.total > 0
                 ? t('Indexing images... ({current}/{total})', { current: indexingProgress.current, total: indexingProgress.total })
                 : importState.status === Status.Importing &&

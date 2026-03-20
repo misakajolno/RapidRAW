@@ -111,12 +111,25 @@ interface DragData {
   parentId?: string;
 }
 
-function formatMaskTypeName(type: string) {
-  if (type === Mask.AiSubject) return 'AI Subject';
-  if (type === Mask.AiForeground) return 'AI Foreground';
-  if (type === Mask.AiSky) return 'AI Sky';
-  if (type === Mask.All) return 'Whole Image';
-  return type.charAt(0).toUpperCase() + type.slice(1);
+function formatMaskTypeName(type: string, t: (key: string, params?: Record<string, any>) => string) {
+  const labelMap: Partial<Record<Mask, string>> = {
+    [Mask.AiSubject]: 'AI Subject',
+    [Mask.AiForeground]: 'AI Foreground',
+    [Mask.AiSky]: 'AI Sky',
+    [Mask.All]: 'Whole Image',
+    [Mask.Brush]: 'Brush',
+    [Mask.Color]: 'Color',
+    [Mask.Linear]: 'Linear',
+    [Mask.Luminance]: 'Luminance',
+    [Mask.QuickEraser]: 'Quick Erase',
+    [Mask.Radial]: 'Radial',
+  };
+
+  return t(labelMap[type as Mask] || type);
+}
+
+function formatSectionTitle(sectionName: string, t: (key: string, params?: Record<string, any>) => string) {
+  return t(sectionName.charAt(0).toUpperCase() + sectionName.slice(1));
 }
 
 const SUB_MASK_CONFIG: Record<Mask, any> = {
@@ -410,7 +423,7 @@ export default function MasksPanel({
     const newContainer = {
       ...INITIAL_MASK_CONTAINER,
       id: uuidv4(),
-      name: `Mask ${adjustments.masks.length + 1}`,
+      name: t('Mask {count}', { count: adjustments.masks.length + 1 }),
       subMasks: [subMask],
     };
     setAdjustments((prev: Adjustments) => ({ ...prev, masks: [...(prev.masks || []), newContainer] }));
@@ -454,7 +467,7 @@ export default function MasksPanel({
     event.stopPropagation();
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const options = OTHERS_MASK_TYPES.map((maskType) => ({
-      label: maskType.name,
+      label: t(maskType.name),
       icon: maskType.icon,
       onClick: () => handleGridClick(maskType.type),
     }));
@@ -496,7 +509,7 @@ export default function MasksPanel({
     }
     const newC = JSON.parse(JSON.stringify(container));
     newC.id = uuidv4();
-    newC.name = `${container.name} Copy`;
+    newC.name = t('{name} Copy', { name: container.name });
     newC.subMasks.forEach((sm: any) => (sm.id = uuidv4()));
     setAdjustments((prev: Adjustments) => ({ ...prev, masks: [...prev.masks, newC] }));
   };
@@ -587,7 +600,7 @@ export default function MasksPanel({
           const newContainer = {
             ...INITIAL_MASK_CONTAINER,
             id: uuidv4(),
-            name: `Mask ${newMasks.length + 1}`,
+            name: t('Mask {count}', { count: newMasks.length + 1 }),
             subMasks: [movedSubMask],
           };
           newMasks.push(newContainer);
@@ -647,7 +660,7 @@ export default function MasksPanel({
     e.preventDefault();
     const allTypes = [...MASK_PANEL_CREATION_TYPES.filter((m) => m.id !== 'others'), ...OTHERS_MASK_TYPES];
     const newMaskSubMenu = allTypes.map((m) => ({
-      label: m.name,
+      label: t(m.name),
       icon: m.icon,
       onClick: () => handleAddMaskContainer(m.type),
     }));
@@ -781,7 +794,7 @@ export default function MasksPanel({
                       exit={{ opacity: 0 }}
                       className="text-center text-text-secondary text-sm py-4 opacity-70"
                     >
-                      No masks created.
+                      {t('No masks created.')}
                     </motion.div>
                   ) : (
                     adjustments.masks.map((container) => (
@@ -898,7 +911,7 @@ export default function MasksPanel({
                   return <Icon size={16} className="text-text-secondary flex-shrink-0 ml-1" />;
                 })()}
                 <span className="text-sm text-text-primary flex-1 truncate">
-                  {formatMaskTypeName((activeDragItem.item as SubMask).type)}
+                  {formatMaskTypeName((activeDragItem.item as SubMask).type, t)}
                 </span>
                 <div className="flex gap-1.5 opacity-50">
                   <Plus size={14} className="text-text-secondary" />
@@ -919,7 +932,7 @@ export default function MasksPanel({
                     <>
                       <Icon size={24} />
                       <span className="text-xs text-center">
-                        {activeDragItem.maskType ? formatMaskTypeName(activeDragItem.maskType) : 'Mask'}
+                        {activeDragItem.maskType ? formatMaskTypeName(activeDragItem.maskType, t) : t('Masks')}
                       </span>
                     </>
                   );
@@ -951,19 +964,21 @@ function NewMaskDropZone({ isOver }: { isOver: boolean }) {
 }
 
 function DraggableGridItem({ maskType, onClick, isDraggable, activeMaskContainerId }: any) {
+  const { t } = useI18n();
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `create-${maskType.id || maskType.type}`,
     data: { type: 'Creation', maskType: maskType.type },
     disabled: !isDraggable,
   });
 
+  const maskName = t(maskType.name);
   const tooltip = maskType.disabled
-    ? 'Coming Soon'
+    ? t('Coming Soon')
     : maskType.id === 'others'
-      ? 'Other Masks'
+      ? t('Other Masks')
       : activeMaskContainerId
-        ? `Add ${maskType.name} to Current Mask`
-        : `Create New ${maskType.name} Mask`;
+        ? t('Add {name} to Current Mask', { name: maskName })
+        : t('Create New {name} Mask', { name: maskName });
 
   return (
     <button
@@ -976,7 +991,7 @@ function DraggableGridItem({ maskType, onClick, isDraggable, activeMaskContainer
                 ${maskType.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-card-active active:bg-accent/20'} ${isDragging ? 'opacity-50' : ''}`}
       data-tooltip={tooltip}
     >
-      <maskType.icon size={24} /> <span className="text-xs">{maskType.name}</span>
+      <maskType.icon size={24} /> <span className="text-xs">{maskName}</span>
     </button>
   );
 }
@@ -1020,6 +1035,7 @@ function ContainerRow({
   } = useDraggable({ id: container.id, data: { type: 'Container', item: container } });
   const [isSubMaskListEmpty, setIsSubMaskListEmpty] = useState(container.subMasks.length === 0);
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (container.subMasks.length > 0 && isSubMaskListEmpty) {
@@ -1065,17 +1081,17 @@ function ContainerRow({
         .filter(Boolean);
     showContextMenu(e.clientX, e.clientY, [
       {
-        label: 'Rename',
+        label: t('Rename'),
         icon: FileEdit,
         onClick: () => {
           setRenamingId(container.id);
           setTempName(container.name);
         },
       },
-      { label: 'Duplicate', icon: PlusSquare, onClick: () => handleDuplicate(container) },
-      { label: 'Copy', icon: Copy, onClick: () => setCopiedMask(container) },
+      { label: t('Duplicate'), icon: PlusSquare, onClick: () => handleDuplicate(container) },
+      { label: t('Copy'), icon: Copy, onClick: () => setCopiedMask(container) },
       {
-        label: 'Paste Adjustments',
+        label: t('Paste Adjustments'),
         icon: ClipboardPaste,
         disabled: !copiedMask,
         onClick: () => {
@@ -1083,20 +1099,20 @@ function ContainerRow({
         },
       },
       {
-        label: 'Apply Preset',
+        label: t('Apply Preset'),
         icon: Bookmark,
         submenu: generatePresetSubmenu(presets).length
           ? generatePresetSubmenu(presets)
-          : [{ label: 'No presets', disabled: true }],
+          : [{ label: t('No presets'), disabled: true }],
       },
       { type: OPTION_SEPARATOR },
       {
-        label: 'Reset Mask Adjustments',
+        label: t('Reset Mask Adjustments'),
         icon: RotateCcw,
         onClick: () =>
           updateContainer(container.id, { adjustments: JSON.parse(JSON.stringify(INITIAL_MASK_ADJUSTMENTS)) }),
       },
-      { label: 'Delete Mask', icon: Trash2, isDestructive: true, onClick: () => handleDelete(container.id) },
+      { label: t('Delete Mask'), icon: Trash2, isDestructive: true, onClick: () => handleDelete(container.id) },
     ]);
   };
 
@@ -1237,9 +1253,9 @@ function ContainerRow({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="p-3 text-xs text-text-secondary text-center italic"
-              >
-                No mask components.
+              className="p-3 text-xs text-text-secondary text-center italic"
+            >
+                {t('No mask components.')}
               </motion.div>
             )}
           </motion.div>
@@ -1277,6 +1293,7 @@ function SubMaskRow({
   };
   const MaskIcon = MASK_ICON_MAP[subMask.type] || Circle;
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
   const [isHovered, setIsHovered] = useState(false);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1307,7 +1324,7 @@ function SubMaskRow({
     e.preventDefault();
     e.stopPropagation();
     showContextMenu(e.clientX, e.clientY, [
-      { label: 'Delete Component', icon: Trash2, isDestructive: true, onClick: handleDelete },
+      { label: t('Delete Component'), icon: Trash2, isDestructive: true, onClick: handleDelete },
     ]);
   };
 
@@ -1375,11 +1392,11 @@ function SubMaskRow({
           )}
         </AnimatePresence>
       </div>
-      <span className="text-sm text-text-primary flex-1 truncate select-none">{formatMaskTypeName(subMask.type)}</span>
+      <span className="text-sm text-text-primary flex-1 truncate select-none">{formatMaskTypeName(subMask.type, t)}</span>
       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           className="p-1 hover:bg-bg-primary rounded text-text-secondary"
-          data-tooltip={subMask.mode === SubMaskMode.Additive ? 'Switch to Subtract' : 'Switch to Add'}
+          data-tooltip={subMask.mode === SubMaskMode.Additive ? t('Switch to Subtract') : t('Switch to Add')}
           onClick={(e) => {
             e.stopPropagation();
             updateSubMask(subMask.id, {
@@ -1391,7 +1408,7 @@ function SubMaskRow({
         </button>
         <button
           className="p-1 hover:bg-bg-primary rounded text-text-secondary"
-          data-tooltip={subMask.visible ? 'Hide Component' : 'Show Component'}
+          data-tooltip={subMask.visible ? t('Hide Component') : t('Show Component')}
           onMouseEnter={() => setIsMaskControlHovered(true)}
           onMouseLeave={() => setIsMaskControlHovered(false)}
           onClick={(e) => {
@@ -1403,7 +1420,7 @@ function SubMaskRow({
         </button>
         <button
           className="p-1 hover:text-red-500 text-text-secondary"
-          data-tooltip="Delete Component"
+          data-tooltip={t('Delete Component')}
           onClick={(e) => {
             e.stopPropagation();
             handleDelete();
@@ -1487,7 +1504,7 @@ function SettingsPanel({
     if (presetButtonRef.current) {
       const rect = presetButtonRef.current.getBoundingClientRect();
       const presetSubmenu = generatePresetSubmenu(presets);
-      const options = presetSubmenu.length > 0 ? presetSubmenu : [{ label: 'No presets found', disabled: true }];
+      const options = presetSubmenu.length > 0 ? presetSubmenu : [{ label: t('No presets found'), disabled: true }];
       showContextMenu(rect.left, rect.bottom + 5, options);
     }
   };
@@ -1574,23 +1591,23 @@ function SettingsPanel({
     };
 
     const isPasteAllowed = copiedSectionAdjustments && copiedSectionAdjustments.section === sectionName;
-    const sectionTitle = sectionName.charAt(0).toUpperCase() + sectionName.slice(1);
+    const sectionTitle = formatSectionTitle(sectionName, t);
 
     const pasteLabel = copiedSectionAdjustments
-      ? `Paste ${copiedSectionAdjustments.section.charAt(0).toUpperCase() + copiedSectionAdjustments.section.slice(1)} Settings`
-      : 'Paste Settings';
+      ? t('Paste {section} Settings', { section: formatSectionTitle(copiedSectionAdjustments.section, t) })
+      : t('Paste Settings');
 
     showContextMenu(event.clientX, event.clientY, [
       {
         icon: Copy,
-        label: `Copy ${sectionTitle} Settings`,
+        label: t('Copy {section} Settings', { section: sectionTitle }),
         onClick: handleCopy,
       },
       { label: pasteLabel, icon: ClipboardPaste, onClick: handlePaste, disabled: !isPasteAllowed },
       { type: OPTION_SEPARATOR },
       {
         icon: RotateCcw,
-        label: `Reset ${sectionTitle} Settings`,
+        label: t('Reset {section} Settings', { section: sectionTitle }),
         onClick: handleReset,
       },
     ]);
@@ -1605,7 +1622,11 @@ function SettingsPanel({
       onClick={(e) => e.stopPropagation()}
     >
       <CollapsibleSection
-        title={isComponentMode ? `${formatMaskTypeName(activeSubMask.type)} Properties` : 'Mask Properties'}
+        title={
+          isComponentMode
+            ? t('{name} Properties', { name: formatMaskTypeName(activeSubMask.type, t) })
+            : t('Mask Properties')
+        }
         isOpen={isSettingsSectionOpen}
         onToggle={() => setSettingsSectionOpen(!isSettingsSectionOpen)}
         canToggleVisibility={false}
@@ -1614,7 +1635,7 @@ function SettingsPanel({
         <div className="space-y-4 pt-2">
           <Switch
             checked={!!(isComponentMode ? activeSubMask.invert : displayContainer.invert)}
-            label={isComponentMode ? 'Invert Component' : 'Invert Mask'}
+            label={isComponentMode ? t('Invert Component') : t('Invert Mask')}
             onChange={(v) =>
               isComponentMode ? updateSubMask(activeSubMask.id, { invert: v }) : handleMaskPropertyChange('invert', v)
             }
@@ -1622,21 +1643,21 @@ function SettingsPanel({
 
           {!isComponentMode && (
             <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-text-secondary select-none">Apply Preset</span>
+              <span className="text-sm font-medium text-text-secondary select-none">{t('Apply Preset')}</span>
               <button
                 ref={presetButtonRef}
                 onClick={handlePresetSelectClick}
                 className="text-sm text-text-primary text-right select-none cursor-pointer hover:text-accent transition-colors"
-                data-tooltip="Select a preset to apply"
+                data-tooltip={t('Select a preset to apply')}
               >
-                Select
+                {t('Select')}
               </button>
             </div>
           )}
 
           <Slider
             defaultValue={100}
-            label="Opacity"
+            label={t('Opacity')}
             max={100}
             min={0}
             value={(isComponentMode ? activeSubMask.opacity : displayContainer.opacity) ?? 100}
@@ -1654,14 +1675,15 @@ function SettingsPanel({
                 <div className="p-3 mb-4 bg-card-active rounded-md border border-surface flex items-center gap-3">
                   <Loader2 size={16} className="text-accent animate-spin flex-shrink-0" />
                   <div className="text-xs text-text-secondary leading-relaxed">
-                    AI Model Downloading: <span className="text-accent font-medium">{aiModelDownloadStatus}</span>
+                    {t('AI Model Downloading:')}{' '}
+                    <span className="text-accent font-medium">{t(aiModelDownloadStatus)}</span>
                   </div>
                 </div>
               )}
               {subMaskConfig.parameters?.map((param: any) => (
                 <Slider
                   key={param.key}
-                  label={param.label}
+                  label={t(param.label)}
                   min={param.min}
                   max={param.max}
                   step={param.step}
@@ -1693,7 +1715,7 @@ function SettingsPanel({
             details: DetailsPanel,
             effects: EffectsPanel,
           }[sectionName];
-          const title = sectionName.charAt(0).toUpperCase() + sectionName.slice(1);
+          const title = formatSectionTitle(sectionName, t);
           return (
             <CollapsibleSection
               key={sectionName}

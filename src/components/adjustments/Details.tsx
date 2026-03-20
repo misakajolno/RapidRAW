@@ -3,6 +3,7 @@ import { Adjustments, DetailsAdjustment } from '../../utils/adjustments';
 import { AppSettings } from '../ui/AppProperties';
 import Text from '../ui/Text';
 import { TextVariants } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface DetailsPanelProps {
   adjustments: Adjustments;
@@ -19,6 +20,8 @@ export default function DetailsPanel({
   isForMask = false,
   onDragStateChange,
 }: DetailsPanelProps) {
+  const { t } = useI18n();
+
   const handleAdjustmentChange = (key: string, value: string) => {
     const numericValue = parseInt(value, 10);
     setAdjustments((prev: Partial<Adjustments>) => ({ ...prev, [key]: numericValue }));
@@ -31,10 +34,10 @@ export default function DetailsPanel({
       {adjustmentVisibility.sharpening !== false && (
         <div className="p-2 bg-bg-tertiary rounded-md">
           <Text variant={TextVariants.heading} className="mb-2">
-            Sharpening
+            {t('Sharpening')}
           </Text>
           <Slider
-            label="Sharpness"
+            label={t('Sharpness')}
             max={100}
             min={-100}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.Sharpness, e.target.value)}
@@ -48,10 +51,10 @@ export default function DetailsPanel({
       {adjustmentVisibility.presence !== false && (
         <div className="p-2 bg-bg-tertiary rounded-md">
           <Text variant={TextVariants.heading} className="mb-2">
-            Presence
+            {t('Presence')}
           </Text>
           <Slider
-            label="Clarity"
+            label={t('Clarity')}
             max={100}
             min={-100}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.Clarity, e.target.value)}
@@ -60,7 +63,7 @@ export default function DetailsPanel({
             onDragStateChange={onDragStateChange}
           />
           <Slider
-            label="Dehaze"
+            label={t('Dehaze')}
             max={100}
             min={-100}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.Dehaze, e.target.value)}
@@ -69,7 +72,7 @@ export default function DetailsPanel({
             onDragStateChange={onDragStateChange}
           />
           <Slider
-            label="Structure"
+            label={t('Structure')}
             max={100}
             min={-100}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.Structure, e.target.value)}
@@ -79,7 +82,7 @@ export default function DetailsPanel({
           />
           {!isForMask && (
             <Slider
-              label="Centré"
+              label={t('Centré')}
               max={100}
               min={-100}
               onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.Centré, e.target.value)}
@@ -94,9 +97,9 @@ export default function DetailsPanel({
       {/* Hide noise reduction to stop people from thinking it exists
       {adjustmentVisibility.noiseReduction !== false && (
         <div className="p-2 bg-bg-tertiary rounded-md">
-          <Text variant={TextVariants.heading} className="mb-2">Noise Reduction</Text>
+          <Text variant={TextVariants.heading} className="mb-2">{t('Noise Reduction')}</Text>
           <Slider
-            label="Luminance"
+            label={t('Luminance')}
             max={100}
             min={0}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.LumaNoiseReduction, e.target.value)}
@@ -104,7 +107,7 @@ export default function DetailsPanel({
             value={adjustments.lumaNoiseReduction}
           />
           <Slider
-            label="Color"
+            label={t('Color')}
             max={100}
             min={0}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.ColorNoiseReduction, e.target.value)}
@@ -118,10 +121,10 @@ export default function DetailsPanel({
       {!isForMask && adjustmentVisibility.chromaticAberration !== false && (
         <div className="p-2 bg-bg-tertiary rounded-md">
           <Text variant={TextVariants.heading} className="mb-2">
-            Chromatic Aberration
+            {t('Chromatic Aberration')}
           </Text>
           <Slider
-            label="Red/Cyan"
+            label={t('Red/Cyan')}
             max={100}
             min={-100}
             onChange={(e: any) => handleAdjustmentChange(DetailsAdjustment.ChromaticAberrationRedCyan, e.target.value)}
@@ -130,7 +133,7 @@ export default function DetailsPanel({
             onDragStateChange={onDragStateChange}
           />
           <Slider
-            label="Blue/Yellow"
+            label={t('Blue/Yellow')}
             max={100}
             min={-100}
             onChange={(e: any) =>

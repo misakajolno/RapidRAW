@@ -66,11 +66,14 @@ function parseDms(dmsString: string) {
 }
 
 function MetadataItem({ label, value }: MetaDataItemProps) {
+  const { t } = useI18n();
+  const displayValue = typeof value === 'string' ? t(value) : String(value);
+
   return (
     <div className="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded odd:bg-bg-primary">
       <p className="font-semibold text-text-primary col-span-1 break-words">{label}</p>
-      <p className="text-text-secondary col-span-2 break-words truncate" data-tooltip={String(value)}>
-        {String(value)}
+      <p className="text-text-secondary col-span-2 break-words truncate" data-tooltip={displayValue}>
+        {displayValue}
       </p>
     </div>
   );
@@ -297,7 +300,7 @@ export default function MetadataPanel({
                                       : "hover:ring-2 hover:ring-white/20"
                                   )}
                                   style={{ backgroundColor: color.color }}
-                                  data-tooltip={color.name}
+                                  data-tooltip={t(color.name)}
                                 >
                                   {currentColor === color.name && (
                                     <Check size={12} className="text-black/50 mx-auto" />
@@ -379,11 +382,11 @@ export default function MetadataPanel({
             {keyCameraSettings.length > 0 && (
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-2 border-b border-surface pb-1">
-                  Key Camera Settings
+                  {t('Key Camera Settings')}
                 </h3>
                 <div className="flex flex-col gap-1">
                   {keyCameraSettings.map((item: any) => (
-                    <MetadataItem key={item.key} label={item.label} value={item.value} />
+                    <MetadataItem key={item.key} label={t(item.label)} value={item.value} />
                   ))}
                 </div>
               </div>
@@ -392,7 +395,7 @@ export default function MetadataPanel({
             {hasGps && gpsData?.lat && gpsData?.lon && (
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-2 border-b border-surface pb-1">
-                  GPS Location
+                  {t('GPS Location')}
                 </h3>
                 <div className="flex flex-col gap-2">
                   <div className="relative rounded-md overflow-hidden border border-surface">
@@ -416,13 +419,13 @@ export default function MetadataPanel({
                       href={`https://www.openstreetmap.org/?mlat=${gpsData.lat}&mlon=${gpsData.lon}#map=15/${gpsData.lat}/${gpsData.lon}`}
                       rel="noopener noreferrer"
                       target="_blank"
-                      data-tooltip="Click to open map in a new tab"
+                      data-tooltip={t('Click to open map in a new tab')}
                     ></a>
                   </div>
                   <div className="flex flex-col gap-1">
-                    <MetadataItem label="Latitude" value={gpsData.lat?.toFixed(6)} />
-                    <MetadataItem label="Longitude" value={gpsData.lon?.toFixed(6)} />
-                    {gpsData.altitude && <MetadataItem label="Altitude" value={gpsData.altitude} />}
+                    <MetadataItem label={t('Latitude')} value={gpsData.lat?.toFixed(6)} />
+                    <MetadataItem label={t('Longitude')} value={gpsData.lon?.toFixed(6)} />
+                    {gpsData.altitude && <MetadataItem label={t('Altitude')} value={gpsData.altitude} />}
                   </div>
                 </div>
               </div>
@@ -431,11 +434,11 @@ export default function MetadataPanel({
             {otherExifEntries.length > 0 && (
               <div>
                 <h3 className="text-base font-bold text-text-primary mb-2 border-b border-surface pb-1">
-                  All EXIF Data
+                  {t('All EXIF Data')}
                 </h3>
                 <div className="flex flex-col gap-1">
                   {otherExifEntries.map(([tag, value]) => (
-                    <MetadataItem key={tag} label={formatExifTag(tag)} value={value} />
+                    <MetadataItem key={tag} label={t(formatExifTag(tag))} value={value} />
                   ))}
                 </div>
               </div>

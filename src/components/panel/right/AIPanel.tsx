@@ -83,11 +83,18 @@ interface DragData {
   parentId?: string;
 }
 
-function formatMaskTypeName(type: string) {
-  if (type === Mask.AiSubject) return 'AI Subject';
-  if (type === Mask.AiForeground) return 'AI Foreground';
-  if (type === Mask.AiSky) return 'AI Sky';
-  return type.charAt(0).toUpperCase() + type.slice(1);
+function formatMaskTypeName(type: string, t: (key: string, params?: Record<string, any>) => string) {
+  const labelMap: Partial<Record<Mask, string>> = {
+    [Mask.AiSubject]: 'AI Subject',
+    [Mask.AiForeground]: 'AI Foreground',
+    [Mask.AiSky]: 'AI Sky',
+    [Mask.Brush]: 'Brush',
+    [Mask.Linear]: 'Linear',
+    [Mask.QuickEraser]: 'Quick Erase',
+    [Mask.Radial]: 'Radial',
+  };
+
+  return t(labelMap[type as Mask] || type);
 }
 
 const PLACEHOLDER_PATCH: AiPatch = {
@@ -416,9 +423,9 @@ export default function AIPanel({
         (adjustments.aiPatches || []).filter((p: AiPatch) =>
           p.subMasks.some((sm: SubMask) => sm.type === Mask.QuickEraser),
         ).length + 1;
-      name = `Quick Erase ${count}`;
+      name = t('Quick Erase {count}', { count });
     } else {
-      name = `AI Edit ${(adjustments.aiPatches || []).length + 1}`;
+      name = t('AI Edit {count}', { count: (adjustments.aiPatches || []).length + 1 });
     }
 
     const newContainer: AiPatch = {
@@ -565,7 +572,7 @@ export default function AIPanel({
             id: uuidv4(),
             invert: false,
             isLoading: false,
-            name: `AI Edit ${newPatches.length + 1}`,
+            name: t('AI Edit {count}', { count: newPatches.length + 1 }),
             patchData: null,
             prompt: '',
             subMasks: [movedSubMask],
@@ -800,7 +807,7 @@ export default function AIPanel({
                   return <Icon size={16} className="text-text-secondary flex-shrink-0 ml-1" />;
                 })()}
                 <span className="text-sm text-text-primary flex-1 truncate">
-                  {formatMaskTypeName((activeDragItem.item as SubMask).type)}
+                  {formatMaskTypeName((activeDragItem.item as SubMask).type, t)}
                 </span>
               </div>
             )}
@@ -813,7 +820,7 @@ export default function AIPanel({
                     <>
                       <Icon size={24} />
                       <span className="text-xs text-center">
-                        {activeDragItem.maskType ? formatMaskTypeName(activeDragItem.maskType) : 'Mask'}
+                        {activeDragItem.maskType ? formatMaskTypeName(activeDragItem.maskType, t) : t('Masks')}
                       </span>
                     </>
                   );
@@ -845,11 +852,13 @@ function NewMaskDropZone({ isOver }: { isOver: boolean }) {
 }
 
 function DraggableGridItem({ maskType, isGenerating, onClick, activePatchContainerId }: any) {
+  const { t } = useI18n();
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `create-ai-${maskType.type}`,
     data: { type: 'Creation', maskType: maskType.type },
     disabled: isGenerating,
   });
+  const maskName = t(maskType.name);
   return (
     <button
       ref={setNodeRef}
@@ -862,13 +871,13 @@ function DraggableGridItem({ maskType, isGenerating, onClick, activePatchContain
               ${isDragging ? 'opacity-50' : ''}`}
       data-tooltip={
         maskType.disabled
-          ? 'Coming Soon'
+          ? t('Coming Soon')
           : activePatchContainerId
-            ? `Add ${maskType.name} to Current Edit`
-            : `Create New ${maskType.name} Edit`
+            ? t('Add {name} to Current Edit', { name: maskName })
+            : t('Create New {name} Edit', { name: maskName })
       }
     >
-      <maskType.icon size={24} /> <span className="text-xs">{maskType.name}</span>
+      <maskType.icon size={24} /> <span className="text-xs">{maskName}</span>
     </button>
   );
 }
@@ -906,6 +915,7 @@ function ContainerRow({
   } = useDraggable({ id: container.id, data: { type: 'Container', item: container } });
   const [isSubMaskListEmpty, setIsSubMaskListEmpty] = useState(container.subMasks.length === 0);
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (container.subMasks.length > 0 && isSubMaskListEmpty) setIsSubMaskListEmpty(false);
@@ -928,7 +938,7 @@ function ContainerRow({
     e.stopPropagation();
     showContextMenu(e.clientX, e.clientY, [
       {
-        label: 'Rename',
+        label: t('Rename'),
         icon: FileEdit,
         onClick: () => {
           setRenamingId(container.id);
@@ -936,11 +946,11 @@ function ContainerRow({
         },
       },
       {
-        label: 'Reset Selection',
+        label: t('Reset Selection'),
         icon: RotateCcw,
         onClick: () => updateContainer(container.id, { subMasks: [] }),
       },
-      { label: 'Delete Edit', icon: Trash2, isDestructive: true, onClick: () => handleDelete(container.id) },
+      { label: t('Delete Edit'), icon: Trash2, isDestructive: true, onClick: () => handleDelete(container.id) },
     ]);
   };
 
@@ -1020,7 +1030,7 @@ function ContainerRow({
         <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             className="p-1 hover:text-text-primary text-text-secondary"
-            data-tooltip={container.visible ? 'Hide Edit' : 'Show Edit'}
+            data-tooltip={container.visible ? t('Hide Edit') : t('Show Edit')}
             onClick={(e) => {
               e.stopPropagation();
               updateContainer(container.id, { visible: !container.visible });
@@ -1030,7 +1040,7 @@ function ContainerRow({
           </button>
           <button
             className="p-1 hover:text-red-500 text-text-secondary"
-            data-tooltip="Delete Edit"
+            data-tooltip={t('Delete Edit')}
             onClick={(e) => {
               e.stopPropagation();
               handleDelete(container.id);
@@ -1085,7 +1095,7 @@ function ContainerRow({
                 exit={{ opacity: 0 }}
                 className="p-3 text-xs text-text-secondary text-center italic"
               >
-                No selection components.
+                {t('No selection components.')}
               </motion.div>
             )}
           </motion.div>
@@ -1123,6 +1133,7 @@ function SubMaskRow({
   };
   const MaskIcon = MASK_ICON_MAP[subMask.type] || Circle;
   const { showContextMenu } = useContextMenu();
+  const { t } = useI18n();
   const [isHovered, setIsHovered] = useState(false);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDraggingContainer = activeDragItem?.type === 'Container';
@@ -1148,7 +1159,7 @@ function SubMaskRow({
     e.preventDefault();
     e.stopPropagation();
     showContextMenu(e.clientX, e.clientY, [
-      { label: 'Delete Component', icon: Trash2, isDestructive: true, onClick: handleDelete },
+      { label: t('Delete Component'), icon: Trash2, isDestructive: true, onClick: handleDelete },
     ]);
   };
   const showNumber = isHovered && totalCount > 1;
@@ -1215,11 +1226,11 @@ function SubMaskRow({
           )}
         </AnimatePresence>
       </div>
-      <span className="text-sm text-text-primary flex-1 truncate select-none">{formatMaskTypeName(subMask.type)}</span>
+      <span className="text-sm text-text-primary flex-1 truncate select-none">{formatMaskTypeName(subMask.type, t)}</span>
       <div className="flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
           className="p-1 hover:bg-bg-primary rounded text-text-secondary"
-          data-tooltip={subMask.mode === SubMaskMode.Additive ? 'Switch to Subtract' : 'Switch to Add'}
+          data-tooltip={subMask.mode === SubMaskMode.Additive ? t('Switch to Subtract') : t('Switch to Add')}
           onClick={(e) => {
             e.stopPropagation();
             updateSubMask(subMask.id, {
@@ -1231,7 +1242,7 @@ function SubMaskRow({
         </button>
         <button
           className="p-1 hover:text-red-500 text-text-secondary"
-          data-tooltip="Delete Component"
+          data-tooltip={t('Delete Component')}
           onClick={(e) => {
             e.stopPropagation();
             handleDelete();
@@ -1373,17 +1384,21 @@ function SettingsPanel({
             )}
             <span className="ml-2">
               {isGeneratingAi || displayContainer.isLoading
-                ? 'Generating...'
+                ? t('Generating...')
                 : useFastInpaint
-                  ? 'Inpaint Selection'
-                  : 'Generate with AI'}
+                  ? t('Inpaint Selection')
+                  : t('Generate with AI')}
             </span>
           </Button>
         </div>
       </CollapsibleSection>
 
       <CollapsibleSection
-        title={isComponentMode ? `${formatMaskTypeName(activeSubMask.type)} Properties` : 'Selection Properties'}
+        title={
+          isComponentMode
+            ? t('{name} Properties', { name: formatMaskTypeName(activeSubMask.type, t) })
+            : t('Selection Properties')
+        }
         isOpen={collapsibleState.properties}
         onToggle={() => handleToggleSection('properties')}
         canToggleVisibility={false}
@@ -1392,7 +1407,7 @@ function SettingsPanel({
         <div className="space-y-4 pt-2">
           <Switch
             checked={!!(isComponentMode ? activeSubMask.invert : displayContainer.invert)}
-            label={isComponentMode ? 'Invert Component' : 'Invert Selection'}
+            label={isComponentMode ? t('Invert Component') : t('Invert Selection')}
             onChange={(v) =>
               isComponentMode
                 ? updateSubMask(activeSubMask.id, { invert: v })
@@ -1406,7 +1421,8 @@ function SettingsPanel({
                 <div className="p-3 mb-4 bg-card-active rounded-md border border-surface flex items-center gap-3">
                   <Loader2 size={16} className="text-accent animate-spin flex-shrink-0" />
                   <div className="text-xs text-text-secondary leading-relaxed">
-                    AI Model Downloading: <span className="text-accent font-medium">{aiModelDownloadStatus}</span>
+                    {t('AI Model Downloading:')}{' '}
+                    <span className="text-accent font-medium">{t(aiModelDownloadStatus)}</span>
                   </div>
                 </div>
               )}
@@ -1414,7 +1430,7 @@ function SettingsPanel({
               {subMaskConfig.parameters?.map((param: any) => (
                 <Slider
                   key={param.key}
-                  label={param.label}
+                  label={t(param.label)}
                   min={param.min}
                   max={param.max}
                   step={param.step}

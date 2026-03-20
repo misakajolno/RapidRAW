@@ -4,6 +4,7 @@ import LUTControl from '../ui/LUTControl';
 import { AppSettings } from '../ui/AppProperties';
 import Text from '../ui/Text';
 import { TextVariants } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface EffectsPanelProps {
   adjustments: Adjustments;
@@ -22,6 +23,8 @@ export default function EffectsPanel({
   appSettings,
   onDragStateChange,
 }: EffectsPanelProps) {
+  const { t } = useI18n();
+
   const handleAdjustmentChange = (key: string, value: string) => {
     const numericValue = parseInt(value, 10);
     setAdjustments((prev: Partial<Adjustments>) => ({ ...prev, [key]: numericValue }));
@@ -48,11 +51,11 @@ export default function EffectsPanel({
     <div className="space-y-4">
       <div className="p-2 bg-bg-tertiary rounded-md">
         <Text variant={TextVariants.heading} className="mb-2">
-          Creative
+          {t('Creative')}
         </Text>
 
         <Slider
-          label="Glow"
+          label={t('Glow')}
           max={100}
           min={0}
           onChange={(e: any) => handleAdjustmentChange(CreativeAdjustment.GlowAmount, e.target.value)}
@@ -62,7 +65,7 @@ export default function EffectsPanel({
         />
 
         <Slider
-          label="Halation"
+          label={t('Halation')}
           max={100}
           min={0}
           onChange={(e: any) => handleAdjustmentChange(CreativeAdjustment.HalationAmount, e.target.value)}
@@ -73,7 +76,7 @@ export default function EffectsPanel({
 
         {!isForMask && (
           <Slider
-            label="Light Flares"
+            label={t('Light Flares')}
             max={100}
             min={0}
             onChange={(e: any) => handleAdjustmentChange(CreativeAdjustment.FlareAmount, e.target.value)}
@@ -88,7 +91,7 @@ export default function EffectsPanel({
         <div className="space-y-4">
           <div className="p-2 bg-bg-tertiary rounded-md">
             <Text variant={TextVariants.heading} className="mb-2">
-              LUT
+              {t('LUT')}
             </Text>
             <LUTControl
               lutName={adjustments.lutName || null}
@@ -103,10 +106,10 @@ export default function EffectsPanel({
           {adjustmentVisibility.vignette !== false && (
             <div className="p-2 bg-bg-tertiary rounded-md">
               <Text variant={TextVariants.heading} className="mb-2">
-                Vignette
+                {t('Vignette')}
               </Text>
               <Slider
-                label="Amount"
+                label={t('Amount')}
                 max={100}
                 min={-100}
                 onChange={(e: any) => handleAdjustmentChange(Effect.VignetteAmount, e.target.value)}
@@ -116,7 +119,7 @@ export default function EffectsPanel({
               />
               <Slider
                 defaultValue={50}
-                label="Midpoint"
+                label={t('Midpoint')}
                 max={100}
                 min={0}
                 onChange={(e: any) => handleAdjustmentChange(Effect.VignetteMidpoint, e.target.value)}
@@ -125,7 +128,7 @@ export default function EffectsPanel({
                 onDragStateChange={onDragStateChange}
               />
               <Slider
-                label="Roundness"
+                label={t('Roundness')}
                 max={100}
                 min={-100}
                 onChange={(e: any) => handleAdjustmentChange(Effect.VignetteRoundness, e.target.value)}
@@ -135,7 +138,7 @@ export default function EffectsPanel({
               />
               <Slider
                 defaultValue={50}
-                label="Feather"
+                label={t('Feather')}
                 max={100}
                 min={0}
                 onChange={(e: any) => handleAdjustmentChange(Effect.VignetteFeather, e.target.value)}
@@ -149,10 +152,10 @@ export default function EffectsPanel({
           {adjustmentVisibility.grain !== false && (
             <div className="p-2 bg-bg-tertiary rounded-md">
               <Text variant={TextVariants.heading} className="mb-2">
-                Grain
+                {t('Grain')}
               </Text>
               <Slider
-                label="Amount"
+                label={t('Amount')}
                 max={100}
                 min={0}
                 onChange={(e: any) => handleAdjustmentChange(Effect.GrainAmount, e.target.value)}
@@ -162,7 +165,7 @@ export default function EffectsPanel({
               />
               <Slider
                 defaultValue={25}
-                label="Size"
+                label={t('Size')}
                 max={100}
                 min={0}
                 onChange={(e: any) => handleAdjustmentChange(Effect.GrainSize, e.target.value)}
@@ -172,7 +175,7 @@ export default function EffectsPanel({
               />
               <Slider
                 defaultValue={50}
-                label="Roughness"
+                label={t('Roughness')}
                 max={100}
                 min={0}
                 onChange={(e: any) => handleAdjustmentChange(Effect.GrainRoughness, e.target.value)}
