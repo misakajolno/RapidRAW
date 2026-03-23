@@ -68,20 +68,41 @@ use crate::ai_processing::{
     run_u2netp_model,
 };
 use crate::exif_processing::{read_exposure_time_secs, read_iso};
-use crate::file_management::{AppSettings, load_settings, parse_virtual_path, read_file_mapped};
+use crate::file_management::{
+    AppSettings, generate_filename_from_template, load_settings, parse_virtual_path,
+    read_file_mapped,
+};
 use crate::formats::is_raw_file;
 use crate::image_loader::{
     composite_patches_on_image, load_and_composite, load_base_image_from_bytes,
 };
 use crate::image_processing::{
-    AllAdjustments, Crop, GeometryParams, GpuContext, ImageMetadata, apply_coarse_rotation,
-    apply_cpu_default_raw_processing, apply_crop, apply_flip, apply_geometry_warp, apply_rotation,
-    apply_unwarp_geometry, downscale_f32_image, get_all_adjustments_from_json,
-    get_or_init_gpu_context, process_and_get_dynamic_image, warp_image_geometry,
+    AllAdjustments, Crop, GeometryParams, GpuContext, ImageMetadata, RenderRequest,
+    apply_coarse_rotation, apply_cpu_default_raw_processing, apply_crop, apply_flip,
+    apply_geometry_warp, apply_rotation, apply_unwarp_geometry, downscale_f32_image,
+    get_all_adjustments_from_json, get_or_init_gpu_context, process_and_get_dynamic_image,
+    warp_image_geometry,
 };
 use crate::lut_processing::{Lut, convert_image_to_cube_lut, generate_identity_lut_image};
 use crate::mask_generation::{AiPatchDefinition, MaskDefinition, generate_mask_bitmap};
 use tagging_utils::{candidates, hierarchy};
+
+#[cfg(target_os = "macos")]
+extern "C" fn force_exit(_signal: libc::c_int) {
+    unsafe {
+        libc::_exit(0);
+    }
+}
+
+#[cfg(target_os = "macos")]
+pub fn register_exit_handler() {
+    unsafe {
+        libc::signal(libc::SIGABRT, force_exit as libc::sighandler_t);
+    }
+}
+
+#[cfg(not(target_os = "macos"))]
+pub fn register_exit_handler() {}
 
 #[derive(serde::Serialize, serde::Deserialize)]
 struct WindowState {
@@ -144,6 +165,7 @@ struct AnalyticsJob {
 
 pub struct AppState {
     window_setup_complete: AtomicBool,
+    pub gpu_crash_flag_path: Mutex<Option<PathBuf>>,
     original_image: Mutex<Option<LoadedImage>>,
     cached_preview: Mutex<Option<CachedPreview>>,
     gpu_context: Mutex<Option<GpuContext>>,
@@ -656,7 +678,7 @@ async fn load_image(
     let (orig_width, orig_height) = pristine_img.dimensions();
 
     *state.original_image.lock().unwrap() = Some(LoadedImage {
-        path: source_path_str.clone(),
+        path,
         image: Arc::new(pristine_img),
         is_raw,
     });
@@ -841,6 +863,7 @@ pub fn get_cached_or_generate_mask(
     generated
 }
 
+#[allow(clippy::too_many_arguments)]
 fn process_preview_job(
     app_handle: &tauri::AppHandle,
     state: tauri::State<AppState>,
@@ -1011,10 +1034,12 @@ fn process_preview_job(
         &state,
         &processing_image,
         new_transform_hash,
-        final_adjustments,
-        &mask_bitmaps,
-        lut,
-        pixel_roi,
+        RenderRequest {
+            adjustments: final_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: pixel_roi,
+        },
         "apply_adjustments",
     );
 
@@ -1315,10 +1340,12 @@ fn generate_uncropped_preview(
             &state,
             &processing_base,
             unique_hash,
-            uncropped_adjustments,
-            &mask_bitmaps,
-            lut,
-            None,
+            RenderRequest {
+                adjustments: uncropped_adjustments,
+                mask_bitmaps: &mask_bitmaps,
+                lut,
+                roi: None,
+            },
             "generate_uncropped_preview",
         ) {
             let (width, height) = processed_image.dimensions();
@@ -1476,10 +1503,12 @@ async fn preview_geometry_transform(
                 &state,
                 &preview_base,
                 visual_hash,
-                all_adjustments,
-                &mask_bitmaps,
-                lut,
-                None,
+                RenderRequest {
+                    adjustments: all_adjustments,
+                    mask_bitmaps: &mask_bitmaps,
+                    lut,
+                    roi: None,
+                },
                 "preview_geometry_transform_base_gen",
             )?;
 
@@ -1694,10 +1723,12 @@ fn process_image_for_export_pipeline(
         state,
         &transformed_image,
         unique_hash,
-        all_adjustments,
-        &mask_bitmaps,
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: None,
+        },
         debug_tag,
     )
 }
@@ -1853,6 +1884,7 @@ fn encode_image_to_bytes(
     Ok(image_bytes)
 }
 
+#[allow(clippy::too_many_arguments)]
 fn export_masks_for_image(
     base_image: &DynamicImage,
     js_adjustments: &Value,
@@ -1911,10 +1943,12 @@ fn export_masks_for_image(
                 state,
                 &transformed_image,
                 unique_hash,
-                single_adjustments,
-                &single_bitmaps,
-                lut.clone(),
-                None,
+                RenderRequest {
+                    adjustments: single_adjustments,
+                    mask_bitmaps: &single_bitmaps,
+                    lut: lut.clone(),
+                    roi: None,
+                },
                 "export_mask_image",
             )?;
 
@@ -1982,10 +2016,12 @@ fn export_adjustments_as_lut(
         state,
         &identity_image,
         unique_hash,
-        all_adjustments,
-        &[],
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &[],
+            lut,
+            roi: None,
+        },
         "export_lut",
     )?;
 
@@ -2149,11 +2185,42 @@ async fn batch_export_images(
         }
         let pool = pool_result.unwrap();
 
+        let mut base_path_counts: HashMap<String, usize> = HashMap::new();
+        let mut export_items = Vec::with_capacity(total_paths);
+
+        for (i, path_str) in paths.into_iter().enumerate() {
+            let (source_path, _) = parse_virtual_path(&path_str);
+            let source_str = source_path.to_string_lossy().to_string();
+            let count = base_path_counts.entry(source_str.clone()).or_insert(0);
+            *count += 1;
+
+            let mut explicit_vc = None;
+            if let Some(idx) = path_str.rfind("vc=") {
+                let id_str = path_str[idx + 3..].split('&').next().unwrap_or("");
+                if let Ok(id) = id_str.parse::<u32>() {
+                    explicit_vc = Some(id);
+                }
+            }
+            if explicit_vc.is_none() {
+                let lower = path_str.to_lowercase();
+                if let Some(idx) = lower.rfind("_vc") {
+                    let id_str: String = lower[idx + 3..]
+                        .chars()
+                        .take_while(|c| c.is_ascii_digit())
+                        .collect();
+                    if let Ok(id) = id_str.parse::<u32>() {
+                        explicit_vc = Some(id);
+                    }
+                }
+            }
+
+            export_items.push((i, path_str, *count, explicit_vc));
+        }
+
         let results: Vec<Result<(), String>> = pool.install(|| {
-            paths
-                .par_iter()
-                .enumerate()
-                .map(|(global_index, image_path_str)| {
+            export_items
+                .into_par_iter()
+                .map(|(global_index, image_path_str, appearance_count, explicit_vc)| {
                     if app_handle
                         .state::<AppState>()
                         .export_task_handle
@@ -2170,12 +2237,12 @@ async fn batch_export_images(
                         serde_json::json!({
                             "current": current_progress,
                             "total": total_paths,
-                            "path": image_path_str
+                            "path": &image_path_str
                         }),
                     );
 
                     let result: Result<(), String> = (|| {
-                        let (source_path, sidecar_path) = parse_virtual_path(image_path_str);
+                        let (source_path, sidecar_path) = parse_virtual_path(&image_path_str);
                         let source_path_str = source_path.to_string_lossy().to_string();
 
                         let metadata: ImageMetadata = if sidecar_path.exists() {
@@ -2196,13 +2263,20 @@ async fn batch_export_images(
                             .filename_template
                             .as_deref()
                             .unwrap_or("{original_filename}_edited");
-                        let new_stem = crate::file_management::generate_filename_from_template(
+                        let mut new_stem = generate_filename_from_template(
                             filename_template,
                             original_path,
                             global_index + 1,
                             total_paths,
                             &file_date,
                         );
+
+                        if let Some(vc_id) = explicit_vc {
+                            new_stem = format!("{}_VC{:02}", new_stem, vc_id);
+                        } else if appearance_count > 1 {
+                            new_stem = format!("{}_VC{:02}", new_stem, appearance_count - 1);
+                        }
+
                         let new_filename = format!("{}.{}", new_stem, output_format);
                         let output_path = output_folder_path.join(new_filename);
                         let extension = output_format.to_lowercase();
@@ -2425,10 +2499,12 @@ async fn estimate_export_size(
         &state,
         &preview_image,
         unique_hash,
-        all_adjustments,
-        &mask_bitmaps,
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: None,
+        },
         "estimate_export_size",
     )?;
 
@@ -2608,10 +2684,12 @@ async fn estimate_batch_export_size(
         &state,
         &preview_base,
         unique_hash,
-        all_adjustments,
-        &mask_bitmaps,
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: None,
+        },
         "estimate_batch_export_size",
     )?;
 
@@ -2749,6 +2827,7 @@ async fn generate_ai_sky_mask(
     })
 }
 
+#[allow(clippy::too_many_arguments)]
 #[tauri::command]
 async fn generate_ai_subject_mask(
     js_adjustments: serde_json::Value,
@@ -2999,10 +3078,12 @@ fn generate_preset_preview(
         &state,
         &transformed_image,
         unique_hash,
-        all_adjustments,
-        &mask_bitmaps,
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: None,
+        },
         "generate_preset_preview",
     )?;
 
@@ -3354,10 +3435,12 @@ async fn generate_all_community_previews(
                 &state,
                 &transformed_image,
                 unique_hash,
-                all_adjustments,
-                &mask_bitmaps,
-                lut,
-                None,
+                RenderRequest {
+                    adjustments: all_adjustments,
+                    mask_bitmaps: &mask_bitmaps,
+                    lut,
+                    roi: None,
+                },
                 "generate_all_community_previews",
             )?;
 
@@ -3702,17 +3785,31 @@ async fn save_hdr(
 async fn apply_denoising(
     path: String,
     intensity: f32,
+    method: String,
     app_handle: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
 ) -> Result<(), String> {
     let (source_path, _) = parse_virtual_path(&path);
     let path_str = source_path.to_string_lossy().to_string();
 
+    let mut ai_session = None;
+    if method == "ai" {
+        let session = crate::ai_processing::get_or_init_denoise_model(
+            &app_handle,
+            &state.ai_state,
+            &state.ai_init_lock,
+        )
+        .await
+        .map_err(|e| e.to_string())?;
+        ai_session = Some(session);
+    }
+
     let denoise_result_handle = state.denoise_result.clone();
 
     tokio::task::spawn_blocking(move || {
-        match denoising::denoise_image(path_str, intensity, app_handle.clone()) {
-            Ok((image, _base64_ignored_in_this_handler_logic)) => {
+        match denoising::denoise_image(path_str, intensity, method, app_handle.clone(), ai_session)
+        {
+            Ok((image, _)) => {
                 *denoise_result_handle.lock().unwrap() = Some(image);
             }
             Err(e) => {
@@ -3873,10 +3970,12 @@ fn generate_preview_for_path(
         &state,
         &transformed_image,
         unique_hash,
-        all_adjustments,
-        &mask_bitmaps,
-        lut,
-        None,
+        RenderRequest {
+            adjustments: all_adjustments,
+            mask_bitmaps: &mask_bitmaps,
+            lut,
+            roi: None,
+        },
         "generate_preview_for_path",
     )?;
     let (width, height) = final_image.dimensions();
@@ -4183,7 +4282,22 @@ fn main() {
             }
 
             let app_handle = app.handle().clone();
-            let settings: AppSettings = load_settings(app_handle.clone()).unwrap_or_default();
+            let config_dir = app_handle.path().app_config_dir().expect("Failed to get config dir");
+            let crash_flag_path = config_dir.join(".gpu_init_crash_flag");
+
+            {
+                let state = app.state::<AppState>();
+                *state.gpu_crash_flag_path.lock().unwrap() = Some(crash_flag_path.clone());
+            }
+
+            let mut settings: AppSettings = load_settings(app_handle.clone()).unwrap_or_default();
+
+            if crash_flag_path.exists() {
+                log::warn!("GPU Driver crash detected on last run! Falling back to OpenGL backend.");
+                settings.processing_backend = Some("gl".to_string());
+                let _ = crate::file_management::save_settings(settings.clone(), app_handle.clone());
+                let _ = std::fs::remove_file(&crash_flag_path);
+            }
 
             let lens_db = lens_correction::load_lensfun_db(&app_handle);
             let state = app.state::<AppState>();
@@ -4360,10 +4474,12 @@ fn main() {
                     _ => {}
                 }
             });
+            crate::register_exit_handler();
             Ok(())
         })
         .manage(AppState {
             window_setup_complete: AtomicBool::new(false),
+            gpu_crash_flag_path: Mutex::new(None),
             original_image: Mutex::new(None),
             cached_preview: Mutex::new(None),
             gpu_context: Mutex::new(None),
@@ -4493,7 +4609,20 @@ fn main() {
                         }
                     }
                 }
-                tauri::RunEvent::ExitRequested { .. } => {
+                tauri::RunEvent::ExitRequested { api, .. } => {
+                    api.prevent_exit();
+
+                    #[cfg(target_os = "macos")]
+                    unsafe { libc::_exit(0); }
+
+                    #[cfg(not(target_os = "macos"))]
+                    std::process::exit(0);
+                }
+                tauri::RunEvent::Exit => {
+                    #[cfg(target_os = "macos")]
+                    unsafe { libc::_exit(0); }
+
+                    #[cfg(not(target_os = "macos"))]
                     std::process::exit(0);
                 }
                 _ => {}

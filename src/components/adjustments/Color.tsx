@@ -81,7 +81,7 @@ const ColorSwatch = ({ color, name, isActive, onClick }: ColorSwatchProps) => {
   return (
     <button
       aria-label={t('Select {name} color', { name: translatedName })}
-      className="relative w-6 h-6 focus:outline-none group"
+      className="relative w-6 h-6 focus:outline-hidden group"
       onClick={handleClick}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}

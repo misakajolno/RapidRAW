@@ -162,6 +162,7 @@ interface PanoramaModalState {
   error: string | null;
   finalImageBase64: string | null;
   isOpen: boolean;
+  isProcessing: boolean;
   progressMessage: string | null;
   stitchingSourcePaths: Array<string>;
 }
@@ -170,6 +171,7 @@ interface HdrModalState {
   error: string | null;
   finalImageBase64: string | null;
   isOpen: boolean;
+  isProcessing: boolean;
   progressMessage: string | null;
   stitchingSourcePaths: Array<string>;
 }
@@ -180,6 +182,7 @@ interface DenoiseModalState {
   previewBase64: string | null;
   originalBase64?: string | null;
   error: string | null;
+  isRaw: boolean;
   targetPath: string | null;
   progressMessage: string | null;
 }
@@ -382,6 +385,7 @@ function App() {
     error: null,
     finalImageBase64: null,
     isOpen: false,
+    isProcessing: false,
     progressMessage: '',
     stitchingSourcePaths: [],
   });
@@ -389,6 +393,7 @@ function App() {
     error: null,
     finalImageBase64: null,
     isOpen: false,
+    isProcessing: false,
     progressMessage: '',
     stitchingSourcePaths: [],
   });
@@ -401,6 +406,7 @@ function App() {
     isProcessing: false,
     previewBase64: null,
     error: null,
+    isRaw: false,
     targetPath: null,
     progressMessage: null,
   });
@@ -3900,7 +3906,7 @@ function App() {
             onClick: () => handleCreateVirtualCopy(selectedImage.path),
           },
           {
-            label: t('Denoise'),
+            label: t('Denoise Image'),
             icon: Grip,
             onClick: () => {
               setDenoiseModalState({
@@ -3910,6 +3916,7 @@ function App() {
                 error: null,
                 targetPath: selectedImage.path,
                 progressMessage: null,
+                isRaw: selectedImage?.isRaw || false,
               });
             },
           },
@@ -4235,7 +4242,7 @@ function App() {
             onClick: () => handleCreateVirtualCopy(finalSelection[0]),
           },
           {
-            label: t('Denoise'),
+            label: t('Denoise Image'),
             icon: Grip,
             disabled: !isSingleSelection,
             onClick: () => {
@@ -4246,6 +4253,7 @@ function App() {
                 error: null,
                 targetPath: finalSelection[0],
                 progressMessage: null,
+                isRaw: selectedImage?.isRaw || false,
               });
             },
           },
@@ -4269,6 +4277,7 @@ function App() {
                 error: null,
                 finalImageBase64: null,
                 isOpen: true,
+                isProcessing: false,
                 progressMessage: t('Starting panorama process...'),
                 stitchingSourcePaths: finalSelection,
               });
@@ -4291,6 +4300,7 @@ function App() {
                 error: null,
                 finalImageBase64: null,
                 isOpen: true,
+                isProcessing: false,
                 progressMessage: t('Starting HDR process...'),
                 stitchingSourcePaths: finalSelection,
               });
@@ -4341,18 +4351,29 @@ function App() {
         },
       },
       {
-        disabled: !isSingleSelection,
         icon: CopyPlus,
         label: t('Duplicate Image'),
-        onClick: async () => {
-          try {
-            await invoke(Invokes.DuplicateFile, { path: finalSelection[0] });
-            await refreshImageList();
-          } catch (err) {
-            console.error('Failed to duplicate file:', err);
-            setError(`Failed to duplicate file: ${err}`);
-          }
-        },
+        disabled: !isSingleSelection,
+        submenu: [
+          {
+            label: t('Physical Copy'),
+            icon: Copy,
+            onClick: async () => {
+              try {
+                await invoke(Invokes.DuplicateFile, { path: finalSelection[0] });
+                await refreshImageList();
+              } catch (err) {
+                console.error('Failed to duplicate file:', err);
+                setError(`Failed to duplicate file: ${err}`);
+              }
+            },
+          },
+          {
+            label: t('Virtual Copy'),
+            icon: CopyPlus,
+            onClick: () => handleCreateVirtualCopy(finalSelection[0]),
+          },
+        ],
       },
       { icon: FileEdit, label: renameLabel, onClick: () => handleRenameFiles(finalSelection) },
       { type: OPTION_SEPARATOR },
@@ -4633,7 +4654,7 @@ function App() {
       rootPath && (
         <div
           className={clsx(
-            'flex h-full overflow-hidden flex-shrink-0',
+            'flex h-full overflow-hidden shrink-0',
             !isResizing && !isInstantTransition && 'transition-all duration-300 ease-in-out',
           )}
           style={{
@@ -4687,7 +4708,7 @@ function App() {
 
   const memoizedLibraryView = useMemo(
     () => (
-      <div className="flex flex-row flex-grow h-full min-h-0">
+      <div className="flex flex-row grow h-full min-h-0">
         <div className="flex-1 flex flex-col min-w-0 gap-2">
           {activeView === 'community' ? (
             <CommunityPage
@@ -4820,7 +4841,7 @@ function App() {
 
     if (selectedImage) {
       return (
-        <div className="flex flex-row flex-grow h-full min-h-0">
+        <div className="flex flex-row grow h-full min-h-0">
           <div className="flex-1 flex flex-col min-w-0">
             <Editor
               activeAiPatchContainerId={activeAiPatchContainerId}
@@ -4875,7 +4896,7 @@ function App() {
             />
             <div
               className={clsx(
-                'flex flex-col w-full overflow-hidden flex-shrink-0',
+                'flex flex-col w-full overflow-hidden shrink-0',
                 !isResizing && !isInstantTransition && 'transition-all duration-300 ease-in-out',
               )}
               style={{
@@ -4926,7 +4947,7 @@ function App() {
 
           <div
             className={clsx(
-              'flex h-full overflow-hidden flex-shrink-0',
+              'flex h-full overflow-hidden shrink-0',
               !isResizing && !isInstantTransition && 'transition-all duration-300 ease-in-out',
             )}
             style={{
@@ -5124,7 +5145,7 @@ function App() {
     >
       <div
         className={clsx(
-          'flex-shrink-0 overflow-hidden z-50',
+          'shrink-0 overflow-hidden z-50',
           !isInstantTransition && 'transition-all duration-300 ease-in-out',
           isFullScreen ? 'max-h-0 opacity-0 pointer-events-none' : 'max-h-[60px] opacity-100',
         )}
@@ -5141,7 +5162,7 @@ function App() {
           ],
         )}
       >
-        <div className="flex flex-row flex-grow h-full min-h-0">
+        <div className="flex flex-row grow h-full min-h-0">
           {memoizedFolderTree}
           <div className="flex-1 flex flex-col min-w-0">{renderContent()}</div>
           {!selectedImage && isLibraryExportPanelVisible && (
@@ -5152,7 +5173,7 @@ function App() {
           )}
           <div
             className={clsx(
-              'flex-shrink-0 overflow-hidden',
+              'shrink-0 overflow-hidden',
               !isResizing && !isInstantTransition && 'transition-all duration-300 ease-in-out',
             )}
             style={{ width: isLibraryExportPanelVisible && !isFullScreen ? `${rightPanelWidth}px` : '0px' }}
@@ -5182,12 +5203,14 @@ function App() {
         error={panoramaModalState.error}
         finalImageBase64={panoramaModalState.finalImageBase64}
         isOpen={panoramaModalState.isOpen}
+        isProcessing={panoramaModalState.isProcessing}
         onClose={() =>
           setPanoramaModalState({
             isOpen: false,
             progressMessage: '',
             finalImageBase64: null,
             error: null,
+            isProcessing: false,
             stitchingSourcePaths: [],
           })
         }
@@ -5201,12 +5224,14 @@ function App() {
         error={hdrModalState.error}
         finalImageBase64={hdrModalState.finalImageBase64}
         isOpen={hdrModalState.isOpen}
+        isProcessing={hdrModalState.isProcessing}
         onClose={() =>
           setHdrModalState({
             isOpen: false,
             progressMessage: '',
             finalImageBase64: null,
             error: null,
+            isProcessing: false,
             stitchingSourcePaths: [],
           })
         }
@@ -5237,6 +5262,7 @@ function App() {
         previewBase64={denoiseModalState.previewBase64}
         originalBase64={denoiseModalState.originalBase64 || null}
         isProcessing={denoiseModalState.isProcessing}
+        isRaw={denoiseModalState.isRaw}
         error={denoiseModalState.error}
         progressMessage={denoiseModalState.progressMessage}
       />

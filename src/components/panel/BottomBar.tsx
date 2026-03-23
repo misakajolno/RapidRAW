@@ -238,7 +238,7 @@ export default function BottomBar({
   };
 
   return (
-    <div className="flex-shrink-0 bg-bg-secondary rounded-lg flex flex-col">
+    <div className="shrink-0 bg-bg-secondary rounded-lg flex flex-col">
       {!isLibraryView && (
         <div
           className={clsx('overflow-hidden', !isResizing && 'transition-all duration-300 ease-in-out')}
@@ -264,7 +264,7 @@ export default function BottomBar({
 
       <div
         className={clsx(
-          'flex-shrink-0 h-10 flex items-center justify-between px-3',
+          'shrink-0 h-10 flex items-center justify-between px-3',
           !isLibraryView && 'border-t',
           !isLibraryView && isFilmstripVisible ? 'border-surface' : 'border-transparent',
         )}
@@ -359,7 +359,7 @@ export default function BottomBar({
             </span>
           </div>
         </div>
-        <div className="flex-grow" />
+        <div className="grow" />
         {isLibraryView ? (
           <div className="flex items-center gap-2">
             <button
@@ -424,7 +424,7 @@ export default function BottomBar({
                     onChange={(e) => setPercentInputValue(e.target.value)}
                     onKeyDown={handlePercentKeyDown}
                     onBlur={handlePercentSubmit}
-                    className="w-full text-xs text-text-primary bg-bg-primary border border-border-color rounded px-1 text-right"
+                    className="w-full text-xs text-text-primary bg-bg-primary border border-border-color rounded-sm px-1 text-right"
                     style={{ fontSize: '12px', height: '18px' }}
                   />
                 ) : (

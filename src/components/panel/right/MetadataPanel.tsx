@@ -70,9 +70,9 @@ function MetadataItem({ label, value }: MetaDataItemProps) {
   const displayValue = typeof value === 'string' ? t(value) : String(value);
 
   return (
-    <div className="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded odd:bg-bg-primary">
-      <p className="font-semibold text-text-primary col-span-1 break-words">{label}</p>
-      <p className="text-text-secondary col-span-2 break-words truncate" data-tooltip={displayValue}>
+    <div className="grid grid-cols-3 gap-2 text-xs py-1.5 px-2 rounded-sm odd:bg-bg-primary">
+      <p className="font-semibold text-text-primary col-span-1 wrap-break-word">{label}</p>
+      <p className="text-text-secondary col-span-2 wrap-break-word truncate" data-tooltip={displayValue}>
         {displayValue}
       </p>
     </div>
@@ -214,10 +214,10 @@ export default function MetadataPanel({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
+      <div className="p-4 flex justify-between items-center shrink-0 border-b border-surface">
         <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Metadata')}</h2>
       </div>
-      <div className="flex-grow overflow-y-auto p-4 text-text-secondary custom-scrollbar">
+      <div className="grow overflow-y-auto p-4 text-text-secondary custom-scrollbar">
         {selectedImage ? (
           <div className="flex flex-col gap-6">
             <div>
@@ -261,7 +261,7 @@ export default function MetadataPanel({
                                 <button
                                   key={star}
                                   onClick={() => onRate(star, [selectedImage.path])}
-                                  className="focus:outline-none transition-transform active:scale-95 hover:scale-110"
+                                  className="focus:outline-hidden transition-transform active:scale-95 hover:scale-110"
                                 >
                                   <Star
                                     size={20}
@@ -346,7 +346,7 @@ export default function MetadataPanel({
                                 onFocus={() => setIsTagInputFocused(true)}
                                 onBlur={() => setIsTagInputFocused(false)}
                                 placeholder={t('Add tag...')}
-                                className="bg-transparent border-none outline-none text-xs w-full text-text-primary placeholder-text-tertiary"
+                                className="bg-transparent border-none outline-hidden text-xs w-full text-text-primary placeholder-text-tertiary"
                              />
                              <button
                                onClick={() => handleAddTag(tagInputValue)}

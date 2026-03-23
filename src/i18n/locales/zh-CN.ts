@@ -339,6 +339,9 @@ const zhCN = {
   'Enter the address and port of your running AI Connector instance. Required for generative AI features.':
     '输入正在运行的 AI Connector 实例地址和端口。生成式 AI 功能需要此配置。',
   'Test': '测试',
+  'Denoise Image': '图像降噪',
+  'Physical Copy': '实体副本',
+  'Virtual Copy': '虚拟副本',
   'Remove lens': '移除镜头',
   'AI Tagging': 'AI 标记',
   'Automatic AI Tagging': '自动 AI 标记',

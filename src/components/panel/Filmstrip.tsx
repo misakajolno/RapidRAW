@@ -3,11 +3,10 @@ import { Image as ImageIcon, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
 import { Grid, useGridCallbackRef } from 'react-window';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { ImageFile, SelectedImage, ThumbnailAspectRatio } from '../ui/AppProperties';
 import { Color, COLOR_LABELS } from '../../utils/adjustments';
 
-const VERTICAL_PADDING = 20;
+const VERTICAL_PADDING = 24;
 const HORIZONTAL_PADDING = 4;
 const ITEM_GAP = 8;
 
@@ -159,7 +158,7 @@ const FilmstripThumbnail = memo(
     return (
       <motion.div
         className={clsx(
-          'h-full w-full rounded-md overflow-hidden cursor-pointer flex-shrink-0 group relative transition-all duration-150 bg-surface',
+          'h-full w-full rounded-md overflow-hidden cursor-pointer shrink-0 group relative transition-all duration-150 bg-surface',
           ringClass,
         )}
         onClick={(e: any) => {
@@ -211,7 +210,7 @@ const FilmstripThumbnail = memo(
         )}
 
         {(colorLabel || rating > 0) && (
-          <div className="absolute top-1 right-1 bg-primary rounded-full px-1.5 py-0.5 text-xs text-white flex items-center gap-1 backdrop-blur-sm shadow-sm z-10">
+          <div className="absolute top-1 right-1 bg-primary rounded-full px-1.5 py-0.5 text-xs text-white flex items-center gap-1 backdrop-blur-xs shadow-xs z-10">
             {colorLabel && (
               <div
                 className="w-3 h-3 rounded-full ring-1 ring-black/20"
@@ -231,7 +230,7 @@ const FilmstripThumbnail = memo(
           <div className="absolute bottom-1 right-1 z-10">
             <div
               data-tooltip="Virtual Copy"
-              className="bg-bg-primary/70 text-white text-[10px] font-bold px-1 py-0.5 rounded-full backdrop-blur-sm"
+              className="bg-bg-primary/70 text-white text-[10px] font-bold px-1 py-0.5 rounded-full backdrop-blur-xs"
             >
               VC
             </div>
@@ -347,8 +346,9 @@ const FilmstripList = ({
     if (resizeEndTimer.current) clearTimeout(resizeEndTimer.current);
 
     resizeEndTimer.current = window.setTimeout(() => {
-      const { selectedPath, imageList } = currentDataRef.current;
-      if (selectedPath && gridHandle) {
+      const { selectedPath, imageList, multiSelectedPaths } = currentDataRef.current;
+
+      if (selectedPath && gridHandle && multiSelectedPaths.length <= 1) {
         const index = imageList.findIndex((img) => img.path === selectedPath);
         if (index !== -1) {
           gridHandle.scrollToColumn({ index, align: 'center', behavior: 'smooth' });
@@ -429,6 +429,14 @@ const FilmstripList = ({
     const currentPath = data.selectedPath;
 
     if (currentPath && gridHandle) {
+      if (data.multiSelectedPaths.length > 1) {
+        prevSelectedPath.current = currentPath;
+        if (data.clickTriggeredScroll.current) {
+          data.clickTriggeredScroll.current = false;
+        }
+        return;
+      }
+
       const index = data.imageList.findIndex((img) => img.path === currentPath);
 
       if (index !== -1) {
@@ -449,7 +457,15 @@ const FilmstripList = ({
         }
       }
     }
-  }, [data.selectedPath, data.imageList, isItemVisible, data.clickTriggeredScroll, performSafeScroll, gridHandle]);
+  }, [
+    data.selectedPath,
+    data.multiSelectedPaths,
+    data.imageList,
+    isItemVisible,
+    data.clickTriggeredScroll,
+    performSafeScroll,
+    gridHandle,
+  ]);
 
   const setSize = useCallback((index: number, width: number) => {
     if (sizeMapRef.current[index] !== width) {
@@ -530,6 +546,22 @@ export default function Filmstrip({
   thumbnailAspectRatio,
 }: FilmStripProps) {
   const clickTriggeredScroll = useRef(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ height: 0, width: 0 });
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        const { height, width } = entry.contentRect;
+        setSize((prev) => (prev.height === height && prev.width === width ? prev : { height, width }));
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const handleImageSelect = (path: string, event: any) => {
     if (path !== selectedImage?.path) {
@@ -539,26 +571,24 @@ export default function Filmstrip({
   };
 
   return (
-    <div className="h-full w-full" onClick={onClearSelection}>
-      <AutoSizer>
-        {({ height, width }) => (
-          <FilmstripList
-            height={height}
-            width={width}
-            data={{
-              imageList,
-              imageRatings,
-              selectedPath: selectedImage?.path,
-              multiSelectedPaths,
-              thumbnails,
-              thumbnailAspectRatio,
-              onContextMenu,
-              onImageSelect: handleImageSelect,
-              clickTriggeredScroll,
-            }}
-          />
-        )}
-      </AutoSizer>
+    <div ref={containerRef} className="h-full w-full" onClick={onClearSelection}>
+      {size.height > 0 && size.width > 0 && (
+        <FilmstripList
+          height={size.height}
+          width={size.width}
+          data={{
+            imageList,
+            imageRatings,
+            selectedPath: selectedImage?.path,
+            multiSelectedPaths,
+            thumbnails,
+            thumbnailAspectRatio,
+            onContextMenu,
+            onImageSelect: handleImageSelect,
+            clickTriggeredScroll,
+          }}
+        />
+      )}
     </div>
   );
 }

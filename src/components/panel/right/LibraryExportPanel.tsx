@@ -488,7 +488,7 @@ export default function LibraryExportPanel({
 
   return (
     <div className="h-full bg-bg-secondary rounded-lg flex flex-col">
-      <div className="p-4 flex justify-between items-center flex-shrink-0 border-b border-surface">
+      <div className="p-4 flex justify-between items-center shrink-0 border-b border-surface">
         <h2 className="text-xl font-bold text-primary text-shadow-shiny">{t('Export')}</h2>
         <button
           onClick={onClose}
@@ -497,7 +497,7 @@ export default function LibraryExportPanel({
           <X size={20} />
         </button>
       </div>
-      <div className="flex-grow overflow-y-auto p-4 text-text-secondary space-y-6">
+      <div className="grow overflow-y-auto p-4 text-text-secondary space-y-6">
         {canExport ? (
           <>
             <ExportPresetsList
@@ -708,7 +708,7 @@ export default function LibraryExportPanel({
         )}
       </div>
 
-      <div className="p-4 border-t border-surface flex-shrink-0 space-y-3">
+      <div className="p-4 border-t border-surface shrink-0 space-y-3">
         <div className="text-center text-xs text-text-tertiary h-4">
           {isEstimating ? (
             <span className="italic">{t('common.states.estimatingSize')}</span>

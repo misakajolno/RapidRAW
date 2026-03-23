@@ -339,6 +339,9 @@ const en = {
   'Enter the address and port of your running AI Connector instance. Required for generative AI features.':
     'Enter the address and port of your running AI Connector instance. Required for generative AI features.',
   'Test': 'Test',
+  'Denoise Image': 'Denoise Image',
+  'Physical Copy': 'Physical Copy',
+  'Virtual Copy': 'Virtual Copy',
   'Remove lens': 'Remove lens',
   'AI Tagging': 'AI Tagging',
   'Automatic AI Tagging': 'Automatic AI Tagging',

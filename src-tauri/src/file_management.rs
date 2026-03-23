@@ -1108,10 +1108,12 @@ pub fn generate_thumbnail_data(
             &state,
             &cropped_preview,
             unique_hash,
-            gpu_adjustments,
-            &mask_bitmaps,
-            lut,
-            None,
+            gpu_processing::RenderRequest {
+                adjustments: gpu_adjustments,
+                mask_bitmaps: &mask_bitmaps,
+                lut,
+                roi: None,
+            },
             "generate_thumbnail_data",
         ) {
             return Ok(processed_image);
@@ -1626,7 +1628,6 @@ pub fn save_metadata_and_update_thumbnail(
     state: tauri::State<AppState>,
 ) -> Result<(), String> {
     let (source_path, sidecar_path) = parse_virtual_path(&path);
-    let source_path_str = source_path.to_string_lossy().to_string();
 
     let mut metadata: ImageMetadata = if sidecar_path.exists() {
         fs::read_to_string(&sidecar_path)
@@ -1652,7 +1653,7 @@ pub fn save_metadata_and_update_thumbnail(
 
     let loaded_image_lock = state.original_image.lock().unwrap();
     let preloaded_image_option = if let Some(loaded_image) = loaded_image_lock.as_ref() {
-        if loaded_image.path == source_path_str {
+        if loaded_image.path == path {
             Some(loaded_image.image.clone())
         } else {
             None
