@@ -57,6 +57,8 @@ function WatermarkPreview({
   watermarkPath,
   imageAspectRatio,
   watermarkImageAspectRatio,
+  previewLabel,
+  logoLabel,
 }: {
   anchor: WatermarkAnchor;
   scale: number;
@@ -65,6 +67,8 @@ function WatermarkPreview({
   watermarkPath: string | null;
   imageAspectRatio: number;
   watermarkImageAspectRatio: number;
+  previewLabel: string;
+  logoLabel: string;
 }) {
   const getPositionStyles = () => {
     const minDimPercent = imageAspectRatio > 1 ? 100 / imageAspectRatio : 100;
@@ -131,7 +135,7 @@ function WatermarkPreview({
       style={{ aspectRatio: imageAspectRatio }}
     >
       <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-text-tertiary text-sm">Preview</span>
+        <span className="text-text-tertiary text-sm">{previewLabel}</span>
       </div>
       {watermarkPath && (
         <div style={getPositionStyles()}>
@@ -139,7 +143,7 @@ function WatermarkPreview({
             className="w-full bg-accent/50 border-2 border-dashed border-accent rounded-sm flex items-center justify-center"
             style={{ aspectRatio: watermarkImageAspectRatio }}
           >
-            <span className="text-white text-[8px] font-bold">Logo</span>
+            <span className="text-white text-[8px] font-bold">{logoLabel}</span>
           </div>
         </div>
       )}
@@ -667,7 +671,7 @@ export default function LibraryExportPanel({
                             defaultValue={10}
                           />
                           <Slider
-                            label="Spacing"
+                            label={t('Spacing')}
                             min={0}
                             max={25}
                             step={1}
@@ -677,7 +681,7 @@ export default function LibraryExportPanel({
                             defaultValue={5}
                           />
                           <Slider
-                            label="Opacity"
+                            label={t('Opacity')}
                             min={0}
                             max={100}
                             step={1}
@@ -694,6 +698,8 @@ export default function LibraryExportPanel({
                             scale={watermarkScale}
                             spacing={watermarkSpacing}
                             opacity={watermarkOpacity}
+                            previewLabel={t('common.labels.preview')}
+                            logoLabel={t('common.labels.logo')}
                           />
                         </>
                       )}

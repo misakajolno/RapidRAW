@@ -22,6 +22,7 @@ import clsx from 'clsx';
 import { LAYOUTS, type Layout, type LayoutDefinition } from '../../utils/CollageVariants';
 import Text from '../ui/Text';
 import { TextVariants } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface CollageModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ const INITIAL_SPACING = 10;
 const INITIAL_BORDER_RADIUS = 8;
 
 export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: CollageModalProps) {
+  const { t } = useI18n();
   const [isMounted, setIsMounted] = useState(false);
   const [show, setShow] = useState(false);
 
@@ -154,7 +156,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
               imageElementsRef.current[imageFile.path] = img;
               resolve({ path: imageFile.path, url, width: img.width, height: img.height });
             };
-            img.onerror = () => reject(new Error(`Failed to load image: ${imageFile.path}`));
+            img.onerror = () => reject(new Error(t('Failed to load image: {path}', { path: imageFile.path })));
             img.src = url;
           });
         });
@@ -175,7 +177,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
         setImageStates(initialStates);
       } catch (err: any) {
         console.error('Failed to load images:', err);
-        setError(err.message || 'Could not load images.');
+        setError(err.message || t('Could not load images.'));
       } finally {
         setIsLoading(false);
       }
@@ -186,7 +188,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
       clearTimeout(timerId);
       Object.values(imageElementsRef.current).forEach((img) => URL.revokeObjectURL(img.src));
     };
-  }, [isOpen, sourceImages]);
+  }, [isOpen, sourceImages, t]);
 
   useEffect(() => {
     if (loadedImages.length > 0) {
@@ -414,7 +416,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
       const path = await onSave(base64Data, sourceImages[0].path);
       setSavedPath(path);
     } catch (err: any) {
-      setError(err.message || 'Could not save the collage.');
+      setError(err.message || t('Could not save the collage.'));
     } finally {
       setIsSaving(false);
     }
@@ -599,11 +601,12 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
         <div>
           <Text variant={TextVariants.heading} className="mb-2 flex items-center justify-between">
             <span className="flex items-center gap-2">
-              <LayoutTemplate size={16} /> Layout
+              <LayoutTemplate size={16} /> {t('Layout')}
             </span>
             <button
               onClick={handleShuffleImages}
-              data-tooltip="Shuffle Images"
+              data-tooltip={t('Shuffle Images')}
+              aria-label={t('Shuffle Images')}
               className="p-1.5 rounded-md hover:bg-surface"
             >
               <Shuffle size={16} />
@@ -633,7 +636,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
       <div>
         <Text variant={TextVariants.heading} className="mb-2 flex items-center justify-between">
           <span className="flex items-center gap-2">
-            <Crop size={16} /> Aspect Ratio
+            <Crop size={16} /> {t('Aspect Ratio')}
           </span>
           <button
             className="p-1.5 rounded-md hover:bg-surface disabled:text-text-tertiary disabled:cursor-not-allowed"
@@ -672,17 +675,17 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
                   : 'bg-surface hover:bg-card-active',
               )}
             >
-              Original
+              {t('Original')}
             </button>
           )}
         </div>
 
-        <Switch label="Keep Original Aspect Ratio" checked={keepOriginalRatio} onChange={setKeepOriginalRatio} />
+        <Switch label={t('Keep Original Aspect Ratio')} checked={keepOriginalRatio} onChange={setKeepOriginalRatio} />
       </div>
 
       <div className="space-y-2">
         <Slider
-          label="Spacing"
+          label={t('Spacing')}
           min={0}
           max={50}
           step={1}
@@ -691,7 +694,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
           onChange={(e) => setSpacing(Number(e.target.value))}
         />
         <Slider
-          label="Border Radius"
+          label={t('Border Radius')}
           min={0}
           max={50}
           step={1}
@@ -703,7 +706,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
 
       <div>
         <Text variant={TextVariants.heading} className="mb-2 flex items-center gap-2">
-          <Palette size={16} /> Background
+          <Palette size={16} /> {t('Background')}
         </Text>
         <div className="flex items-center gap-2 bg-surface p-2 rounded-md">
           <input
@@ -723,7 +726,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
 
       <div>
         <Text variant={TextVariants.heading} className="mb-2 flex items-center gap-2">
-          <Proportions size={16} /> Export Size (px)
+          <Proportions size={16} /> {t('Export Size (px)')}
         </Text>
         <div className="flex items-center gap-2">
           <input
@@ -731,7 +734,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
             value={exportWidth}
             onChange={(e) => handleExportDimChange(e, 'width')}
             className="w-full bg-bg-primary text-center rounded-md p-1 border border-surface focus:border-accent focus:ring-accent"
-            placeholder="W"
+            placeholder={t('Width')}
           />
           <span className="text-text-tertiary">×</span>
           <input
@@ -739,7 +742,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
             value={exportHeight}
             onChange={(e) => handleExportDimChange(e, 'height')}
             className="w-full bg-bg-primary text-center rounded-md p-1 border border-surface focus:border-accent focus:ring-accent"
-            placeholder="H"
+            placeholder={t('Height')}
           />
         </div>
       </div>
@@ -752,7 +755,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
         <div className="flex flex-col items-center justify-center h-full text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <Text variant={TextVariants.heading} className="mb-2">
-            Collage Saved!
+            {t('Collage Saved!')}
           </Text>
         </div>
       );
@@ -762,7 +765,7 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
         <div className="flex flex-col items-center justify-center h-full text-center">
           <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <Text variant={TextVariants.heading} className="mb-2">
-            An Error Occurred
+            {t('An Error Occurred')}
           </Text>
           <Text className="max-w-xs">{error}</Text>
         </div>
@@ -900,12 +903,16 @@ export default function CollageModal({ isOpen, onClose, onSave, sourceImages }: 
                 onClick={onClose}
                 className="px-4 py-2 rounded-md text-text-secondary hover:bg-surface transition-colors"
               >
-                {savedPath || error ? (savedPath ? 'Done' : 'Close') : 'Cancel'}
+                {savedPath || error
+                  ? savedPath
+                    ? t('common.actions.done')
+                    : t('common.actions.close')
+                  : t('common.actions.cancel')}
               </button>
               {!savedPath && !error && (
                 <Button onClick={handleSave} disabled={isSaving || isLoading || !activeLayout}>
                   {isSaving ? <Loader2 className="animate-spin mr-2" /> : <Save size={16} className="mr-2" />}
-                  {isSaving ? 'Saving...' : 'Save Collage'}
+                  {isSaving ? t('Saving...') : t('Save Collage')}
                 </Button>
               )}
             </div>

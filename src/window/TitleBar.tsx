@@ -2,8 +2,10 @@ import { useCallback, useState, useEffect } from 'react';
 import { platform } from '@tauri-apps/plugin-os';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { Minus, Square, X } from 'lucide-react';
+import { useI18n } from '../i18n';
 
 export default function TitleBar() {
+  const { t } = useI18n();
   const [osPlatform, setOsPlatform] = useState('');
 
   useEffect(() => {
@@ -52,17 +54,17 @@ export default function TitleBar() {
         {isMac && (
           <div className="flex items-center h-full px-4 space-x-2">
             <button
-              aria-label="Close window"
+              aria-label={t('Close window')}
               className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors duration-150"
               onClick={handleClose}
             />
             <button
-              aria-label="Minimize window"
+              aria-label={t('Minimize window')}
               className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors duration-150"
               onClick={handleMinimize}
             />
             <button
-              aria-label="Maximize window"
+              aria-label={t('Maximize window')}
               className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors duration-150"
               onClick={handleMaximize}
             />
@@ -76,21 +78,21 @@ export default function TitleBar() {
         {isWindows && (
           <>
             <button
-              aria-label="Minimize window"
+              aria-label={t('Minimize window')}
               className="p-2 h-full inline-flex justify-center items-center hover:bg-white/10 transition-colors duration-150"
               onClick={handleMinimize}
             >
               <Minus size={16} className="text-text-secondary" />
             </button>
             <button
-              aria-label="Maximize window"
+              aria-label={t('Maximize window')}
               className="p-2 h-full inline-flex justify-center items-center hover:bg-white/10 transition-colors duration-150"
               onClick={handleMaximize}
             >
               <Square size={14} className="text-text-secondary" />
             </button>
             <button
-              aria-label="Close window"
+              aria-label={t('Close window')}
               className="p-2 h-full inline-flex justify-center items-center hover:bg-red-500/80 transition-colors duration-150"
               onClick={handleClose}
             >

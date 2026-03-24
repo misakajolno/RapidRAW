@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import Button from '../ui/Button';
 import Text from '../ui/Text';
 import { TextColors, TextVariants } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface HdrModalProps {
   error: string | null;
@@ -32,6 +33,7 @@ export default function HdrModal({
   onMerge,
   progressMessage,
 }: HdrModalProps) {
+  const { t } = useI18n();
   const [isMounted, setIsMounted] = useState(false);
   const [show, setShow] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -98,7 +100,7 @@ export default function HdrModal({
             <XCircle className="w-12 h-12 text-red-500" />
           </div>
           <Text variant={TextVariants.title} className="mb-2 text-center">
-            HDR Merge Failed
+            {t('HDR Merge Failed')}
           </Text>
           <Text className="text-center p-4 rounded-lg bg-bg-primary max-w-md mt-2 leading-relaxed">
             {String(error)}
@@ -111,7 +113,7 @@ export default function HdrModal({
       return (
         <div className="w-full">
           <div className="w-full max-h-[500px] bg-[#111] rounded-lg overflow-hidden border border-surface flex items-center justify-center">
-            <img src={finalImageBase64} alt="Merged HDR" className="w-full h-full object-contain max-h-[500px]" />
+            <img src={finalImageBase64} alt={t('Merged HDR')} className="w-full h-full object-contain max-h-[500px]" />
           </div>
           {savedPath && (
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
@@ -122,7 +124,7 @@ export default function HdrModal({
                 className="flex items-center justify-center gap-2 mt-4"
               >
                 <CheckCircle className="w-5 h-5" />
-                <span>HDR Saved Successfully!</span>
+                <span>{t('HDR Saved Successfully!')}</span>
               </Text>
             </motion.div>
           )}
@@ -135,7 +137,7 @@ export default function HdrModal({
         <div className="flex h-[460px] overflow-hidden rounded-lg border border-surface">
           <div className="w-2/5 relative overflow-hidden shrink-0 bg-[#0a0a0a] flex items-center justify-center">
             {loadingImageUrl ? (
-              <img src={loadingImageUrl} alt="Source preview" className="w-full h-full object-cover" />
+              <img src={loadingImageUrl} alt={t('Source preview')} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-surface/50" />
             )}
@@ -148,10 +150,10 @@ export default function HdrModal({
               className="flex flex-col items-center w-full"
             >
               <Text variant={TextVariants.title} className="mb-2 text-center">
-                Merging HDR
+                {t('Merging HDR')}
               </Text>
               <Text className="text-center font-mono h-6 flex justify-center items-center">
-                {progressMessage || 'Initializing...'}
+                {progressMessage || t('Initializing...')}
               </Text>
 
               <div className="mt-8 w-64 relative">
@@ -172,7 +174,7 @@ export default function HdrModal({
               </div>
 
               <Text variant={TextVariants.small} className="mt-6 text-center max-w-xs opacity-60">
-                This may take a few minutes depending on the number and size of your exposures.
+                {t('This may take a few minutes depending on the number and size of your exposures.')}
               </Text>
             </motion.div>
           </div>
@@ -186,11 +188,12 @@ export default function HdrModal({
           <Images className="w-12 h-12 text-accent" />
         </div>
         <Text variant={TextVariants.title} className="mb-3 text-center">
-          Merge to HDR
+          {t('Merge to HDR')}
         </Text>
         <Text className="text-center max-w-md leading-relaxed text-text-secondary">
-          Combine {imageCount ? `${imageCount} bracketed exposures` : 'your bracketed exposures'} into a single High
-          Dynamic Range image.
+          {imageCount
+            ? t('Combine {count} bracketed exposures into a single High Dynamic Range image.', { count: imageCount })
+            : t('Combine your bracketed exposures into a single High Dynamic Range image.')}
         </Text>
       </div>
     );
@@ -200,7 +203,7 @@ export default function HdrModal({
     if (error) {
       return (
         <Button onClick={handleClose} className="w-full">
-          Close
+          {t('common.actions.close')}
         </Button>
       );
     }
@@ -212,9 +215,9 @@ export default function HdrModal({
             onClick={handleClose}
             className="px-4 py-2 rounded-md text-text-secondary hover:bg-card-active transition-colors"
           >
-            Close
+            {t('common.actions.close')}
           </button>
-          <Button onClick={handleOpen}>Open in Editor</Button>
+          <Button onClick={handleOpen}>{t('common.actions.openInEditor')}</Button>
         </>
       );
     }
@@ -227,7 +230,7 @@ export default function HdrModal({
           onClick={handleClose}
           className="px-4 py-2 rounded-md text-text-secondary hover:bg-card-active transition-colors text-sm"
         >
-          {finalImageBase64 ? 'Close' : 'Cancel'}
+          {finalImageBase64 ? t('common.actions.close') : t('common.actions.cancel')}
         </button>
 
         <Button onClick={onMerge} disabled={isProcessing} variant={finalImageBase64 ? 'secondary' : 'primary'}>
@@ -238,13 +241,13 @@ export default function HdrModal({
           ) : (
             <Images className="mr-2" size={16} />
           )}
-          {finalImageBase64 ? 'Retry' : 'Start'}
+          {finalImageBase64 ? t('Retry') : t('Start')}
         </Button>
 
         {finalImageBase64 && (
           <Button onClick={handleSave} disabled={isSaving || isProcessing}>
             {isSaving ? <Loader2 className="animate-spin mr-2" size={16} /> : <Save className="mr-2" size={16} />}
-            Save
+            {t('common.actions.save')}
           </Button>
         )}
       </div>

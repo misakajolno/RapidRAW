@@ -6,6 +6,7 @@ import Dropdown from '../ui/Dropdown';
 import Slider from '../ui/Slider';
 import Text from '../ui/Text';
 import { TextColors, TextVariants, TextWeights } from '../../types/typography';
+import { useI18n } from '../../i18n';
 
 interface DenoiseModalProps {
   isOpen: boolean;
@@ -22,12 +23,8 @@ interface DenoiseModalProps {
   loadingImageUrl?: string | null;
 }
 
-const methodOptions: Array<{ label: string; value: 'ai' | 'bm3d' }> = [
-  { label: 'NIND (AI - Best for RAW)', value: 'ai' },
-  { label: 'BM3D (Traditional - All formats)', value: 'bm3d' },
-];
-
 const ImageCompare = ({ original, denoised }: { original: string; denoised: string }) => {
+  const { t } = useI18n();
   const [sliderPosition, setSliderPosition] = useState(50);
   const [zoom, setZoom] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
@@ -116,7 +113,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
     <div className="flex flex-col h-full bg-[#111] rounded-lg overflow-hidden border border-surface">
       <div className="h-9 bg-bg-primary border-b border-surface flex items-center justify-between px-3">
         <Text as="div" variant={TextVariants.small} className="flex items-center gap-2">
-          <Move size={14} /> <span>Pan & Zoom enabled</span>
+          <Move size={14} /> <span>{t('Pan & Zoom enabled')}</span>
         </Text>
         <Text as="div" variant={TextVariants.small} className="flex items-center gap-2">
           <button onClick={() => setZoom((z) => Math.max(0.5, z - 0.5))} className="hover:text-text-primary">
@@ -134,7 +131,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
             }}
             className="ml-2 text-accent hover:underline"
           >
-            Reset
+            {t('Reset')}
           </button>
         </Text>
       </div>
@@ -149,7 +146,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
           <div className="origin-center" style={imageTransformStyle}>
             <img
               src={denoised}
-              alt="Denoised"
+              alt={t('Denoised')}
               className="max-w-none shadow-xl"
               style={{ height: 'auto' }}
               draggable={false}
@@ -164,7 +161,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
           <div className="origin-center" style={imageTransformStyle}>
             <img
               src={original}
-              alt="Original"
+              alt={t('Original')}
               className="max-w-none shadow-xl"
               style={{ height: 'auto' }}
               draggable={false}
@@ -190,7 +187,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
           weight={TextWeights.medium}
           className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-md pointer-events-none z-0"
         >
-          Original
+          {t('Original')}
         </Text>
         <Text
           as="div"
@@ -199,7 +196,7 @@ const ImageCompare = ({ original, denoised }: { original: string; denoised: stri
           weight={TextWeights.medium}
           className="absolute top-3 right-3 bg-accent/90 backdrop-blur-xs px-2.5 py-1 rounded-md pointer-events-none z-0"
         >
-          Denoised
+          {t('Denoised')}
         </Text>
       </div>
     </div>
@@ -220,12 +217,17 @@ export default function DenoiseModal({
   isRaw,
   loadingImageUrl,
 }: DenoiseModalProps) {
+  const { t } = useI18n();
   const [isMounted, setIsMounted] = useState(false);
   const [show, setShow] = useState(false);
   const [intensity, setIntensity] = useState<number>(15);
   const [method, setMethod] = useState<'ai' | 'bm3d'>('ai');
   const [isSaving, setIsSaving] = useState(false);
   const [savedPath, setSavedPath] = useState<string | null>(null);
+  const methodOptions: Array<{ label: string; value: 'ai' | 'bm3d' }> = [
+    { label: t('NIND (AI - Best for RAW)'), value: 'ai' },
+    { label: t('BM3D (Traditional - All formats)'), value: 'bm3d' },
+  ];
 
   const mouseDownTarget = useRef<EventTarget | null>(null);
 
@@ -295,7 +297,7 @@ export default function DenoiseModal({
             <XCircle className="w-12 h-12 text-red-500" />
           </div>
           <Text variant={TextVariants.title} className="mb-2 text-center">
-            Processing Failed
+            {t('Processing Failed')}
           </Text>
           <Text className="text-center p-4 rounded-lg bg-bg-primary max-w-md mt-2 leading-relaxed">
             {String(error)}
@@ -317,7 +319,7 @@ export default function DenoiseModal({
                 className="flex items-center justify-center gap-2 mt-4"
               >
                 <CheckCircle className="w-5 h-5" />
-                <span>Image Saved Successfully!</span>
+                <span>{t('common.states.imageSavedSuccessfully')}</span>
               </Text>
             </motion.div>
           )}
@@ -330,7 +332,7 @@ export default function DenoiseModal({
         <div className="flex h-[460px] overflow-hidden rounded-lg border border-surface">
           <div className="w-2/5 relative overflow-hidden shrink-0 bg-[#0a0a0a] flex items-center justify-center">
             {loadingImageUrl ? (
-              <img src={loadingImageUrl} alt="Selected preview" className="w-full h-full object-cover" />
+              <img src={loadingImageUrl} alt={t('Selected preview')} className="w-full h-full object-cover" />
             ) : (
               <div className="w-full h-full bg-surface/50" />
             )}
@@ -343,10 +345,10 @@ export default function DenoiseModal({
               className="flex flex-col items-center w-full"
             >
               <Text variant={TextVariants.title} className="mb-2 text-center">
-                Denoising in Progress
+                {t('Denoising in Progress')}
               </Text>
               <Text className="text-center font-mono h-6 flex justify-center items-center">
-                {progressMessage || 'Initializing...'}
+                {progressMessage || t('Initializing...')}
               </Text>
 
               <div className="mt-8 w-64 relative">
@@ -368,10 +370,10 @@ export default function DenoiseModal({
 
               <Text
                 variant={TextVariants.small}
-                data-tooltip="NIND Denoise does not yet support GPU acceleration due to dependency limitations."
+                data-tooltip={t('NIND Denoise does not yet support GPU acceleration due to dependency limitations.')}
                 className="mt-6 text-center max-w-xs opacity-60"
               >
-                This may take a few minutes depending on image size and selected method.
+                {t('This may take a few minutes depending on image size and selected method.')}
               </Text>
             </motion.div>
           </div>
@@ -385,10 +387,10 @@ export default function DenoiseModal({
           <Grip className="w-12 h-12 text-accent" />
         </div>
         <Text variant={TextVariants.title} className="mb-3 text-center">
-          Denoise Image
+          {t('Denoise Image')}
         </Text>
         <Text className="text-center max-w-md leading-relaxed text-text-secondary">
-          Remove noise from your image using AI-powered or traditional denoising.
+          {t('Remove noise from your image using AI-powered or traditional denoising.')}
         </Text>
       </div>
     );
@@ -398,7 +400,7 @@ export default function DenoiseModal({
     if (error) {
       return (
         <Button onClick={handleClose} className="w-full">
-          Close
+          {t('common.actions.close')}
         </Button>
       );
     }
@@ -410,9 +412,9 @@ export default function DenoiseModal({
             onClick={handleClose}
             className="px-4 py-2 rounded-md text-text-secondary hover:bg-card-active transition-colors"
           >
-            Close
+            {t('common.actions.close')}
           </button>
-          <Button onClick={handleOpen}>Open in Editor</Button>
+          <Button onClick={handleOpen}>{t('common.actions.openInEditor')}</Button>
         </>
       );
     }
@@ -424,7 +426,7 @@ export default function DenoiseModal({
         <div className="flex-1 flex items-center gap-6">
           <div className="flex flex-col gap-1 w-[280px] mt-2 shrink-0">
             <Text variant={TextVariants.body} weight={TextWeights.medium}>
-              Method
+              {t('Method')}
             </Text>
             <Dropdown
               options={methodOptions}
@@ -437,7 +439,7 @@ export default function DenoiseModal({
           </div>
           <div className="flex-1 max-w-[280px]">
             <Slider
-              label={method === 'ai' ? 'Quality / Tile Size' : 'Strength'}
+              label={t(method === 'ai' ? 'Quality / Tile Size' : 'Strength')}
               value={intensity}
               min={0}
               max={100}
@@ -456,7 +458,7 @@ export default function DenoiseModal({
             onClick={handleClose}
             className="px-4 py-2 rounded-md text-text-secondary hover:bg-card-active transition-colors text-sm"
           >
-            {previewBase64 ? 'Close' : 'Cancel'}
+            {previewBase64 ? t('common.actions.close') : t('common.actions.cancel')}
           </button>
 
           <Button onClick={handleRunDenoise} disabled={isProcessing} variant={previewBase64 ? 'secondary' : 'primary'}>
@@ -467,13 +469,13 @@ export default function DenoiseModal({
             ) : (
               <Grip className="mr-2" size={16} />
             )}
-            {previewBase64 ? 'Retry' : 'Start'}
+            {previewBase64 ? t('Retry') : t('Start')}
           </Button>
 
           {previewBase64 && (
             <Button onClick={handleSave} disabled={isSaving || isProcessing}>
               {isSaving ? <Loader2 className="animate-spin mr-2" size={16} /> : <Save className="mr-2" size={16} />}
-              Save
+              {t('common.actions.save')}
             </Button>
           )}
         </div>

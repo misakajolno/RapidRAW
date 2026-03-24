@@ -14,6 +14,7 @@ import Button from '../ui/Button';
 import Input from '../ui/Input';
 import { Invokes, SupportedTypes, ImageFile } from '../ui/AppProperties';
 import { INITIAL_ADJUSTMENTS } from '../../utils/adjustments';
+import { useI18n } from '../../i18n';
 
 const DEFAULT_PREVIEW_IMAGE_URL = 'https://raw.githubusercontent.com/CyberTimon/RapidRAW-Presets/main/sample-image.jpg';
 
@@ -59,6 +60,7 @@ const shuffleArray = (array: any[]) => {
 };
 
 const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: CommunityPageProps) => {
+  const { t } = useI18n();
   const [presets, setPresets] = useState<CommunityPreset[]>([]);
   const [previews, setPreviews] = useState<Record<string, string | null>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -214,9 +216,9 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-primary flex items-center gap-2">
-              <Users /> Community Presets
+              <Users /> {t('Community Presets')}
             </h1>
-            <p className="text-sm text-text-secondary">Discover presets created by the community.</p>
+            <p className="text-sm text-text-secondary">{t('library.discoverCommunityPresets')}</p>
           </div>
         </div>
       </header>
@@ -226,20 +228,20 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
           <Input
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search presets..."
+            placeholder={t('library.searchPresetsPlaceholder')}
             className="pl-10 w-64"
           />
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary" />
         </div>
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-text-secondary">Sort by:</span>
+          <span className="text-text-secondary">{t('library.sortBy')}</span>
           <div className="relative">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="bg-surface border border-border-color rounded-md py-1.5 pl-3 pr-8 text-sm appearance-none focus:ring-accent focus:border-accent"
             >
-              <option value="name">Name (A-Z)</option>
+              <option value="name">{t('library.nameAz')}</option>
             </select>
             <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary pointer-events-none" />
           </div>
@@ -250,7 +252,7 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
         {isLoading ? (
           <div className="flex items-center justify-center h-full text-text-secondary">
             <Loader2 className="h-8 w-8 animate-spin mr-2" />
-            Fetching presets from GitHub...
+            {t('Fetching presets from GitHub...')}
           </div>
         ) : (
           <motion.div
@@ -291,15 +293,17 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
                           disabled={status !== 'idle'}
                           className="shadow-lg"
                         >
-                          {status === 'idle' && <>Save</>}
-                          {status === 'downloading' && <><Loader2 size={14} className="mr-2 animate-spin" /> Saving...</>}
-                          {status === 'success' && <><CheckCircle2 size={14} className="mr-2" /> Saved</>}
+                          {status === 'idle' && <>{t('common.actions.save')}</>}
+                          {status === 'downloading' && <><Loader2 size={14} className="mr-2 animate-spin" /> {t('Saving...')}</>}
+                          {status === 'success' && <><CheckCircle2 size={14} className="mr-2" /> {t('Saved')}</>}
                         </Button>
                       </div>
                     </div>
                     <div className="p-3 text-center">
                       <h4 className="font-semibold truncate text-text-primary">{preset.name}</h4>
-                      <p className="text-xs text-text-secondary font-['cursive'] italic mt-1">by {preset.creator}</p>
+                      <p className="text-xs text-text-secondary font-['cursive'] italic mt-1">
+                        {t('library.byCreator', { creator: preset.creator })}
+                      </p>
                     </div>
                   </motion.div>
                 );
@@ -314,7 +318,7 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-center mt-8 py-4 text-sm text-text-secondary"
           >
-            <p>Want to get your preset featured?</p>
+            <p>{t('library.wantPresetFeatured')}</p>
             <a
               href="https://github.com/CyberTimon/RapidRAW-Presets/issues/new?assignees=&labels=preset-submission&template=preset_submission.md&title=Preset+Submission%3A+%5BYour+Preset+Name%5D"
               target="_blank"
@@ -322,7 +326,7 @@ const CommunityPage = ({ onBackToLibrary, imageList, currentFolderPath }: Commun
               className="text-accent hover:underline inline-flex items-center gap-2"
             >
               <Github size={14} />
-              Create an issue on GitHub
+              {t('Create an issue on GitHub')}
             </a>
           </motion.div>
         )}

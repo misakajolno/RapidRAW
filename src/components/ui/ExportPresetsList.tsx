@@ -4,6 +4,7 @@ import { Plus, Trash2, Save, X, Check } from 'lucide-react';
 import { ExportPreset } from './ExportImportProperties';
 import { AppSettings } from './AppProperties';
 import Dropdown from './Dropdown';
+import { useI18n } from '../../i18n';
 
 interface ExportPresetsListProps {
   appSettings: AppSettings | null;
@@ -18,6 +19,7 @@ export default function ExportPresetsList({
   onApplyPreset,
   onSettingsChange,
 }: ExportPresetsListProps) {
+  const { t } = useI18n();
   const [isCreating, setIsCreating] = useState(false);
   const [newPresetName, setNewPresetName] = useState('');
   const [selectedPresetId, setSelectedPresetId] = useState<string>('');
@@ -94,7 +96,7 @@ export default function ExportPresetsList({
 
   return (
     <div className="mb-6">
-      <h3 className="text-sm font-semibold text-text-primary mb-3 border-surface pb-2">Export Presets</h3>
+      <h3 className="text-sm font-semibold text-text-primary mb-3 border-surface pb-2">{t('Export Presets')}</h3>
 
       {!isCreating ? (
         <div className="flex gap-2">
@@ -102,14 +104,14 @@ export default function ExportPresetsList({
             value={selectedPresetId}
             onChange={handleSelect}
             options={dropdownOptions}
-            placeholder="Select a preset..."
+            placeholder={t('Select a preset...')}
             className="w-full"
           />
 
           <button
             onClick={() => setIsCreating(true)}
             className="p-2 bg-surface hover:bg-card-active rounded-md text-text-primary transition-colors"
-            data-tooltip="Save current settings as new preset"
+            data-tooltip={t('Save current settings as new preset')}
           >
             <Plus size={18} />
           </button>
@@ -122,14 +124,14 @@ export default function ExportPresetsList({
                 className={`p-2 bg-surface hover:bg-card-active rounded-md transition-colors ${
                   isSaved ? 'text-green-500' : 'text-text-secondary'
                 }`}
-                data-tooltip={isSaved ? "Saved!" : "Overwrite selected preset"}
+                data-tooltip={isSaved ? t('Saved!') : t('Overwrite selected preset')}
               >
                 {isSaved ? <Check size={18} /> : <Save size={18} />}
               </button>
               <button
                 onClick={handleDeletePreset}
                 className="p-2 bg-surface hover:bg-red-500/20 hover:text-red-500 rounded-md text-text-secondary transition-colors"
-                data-tooltip="Delete preset"
+                data-tooltip={t('Delete preset')}
               >
                 <Trash2 size={18} />
               </button>
@@ -141,7 +143,7 @@ export default function ExportPresetsList({
           <input
             autoFocus
             type="text"
-            placeholder="Preset Name"
+            placeholder={t('Preset Name')}
             value={newPresetName}
             onChange={(e) => setNewPresetName(e.target.value)}
             className="grow bg-bg-primary border border-surface rounded-md p-2 text-sm text-text-primary focus:ring-accent focus:border-accent"

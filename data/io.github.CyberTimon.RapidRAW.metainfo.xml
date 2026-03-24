@@ -3,7 +3,7 @@
   <id>io.github.CyberTimon.RapidRAW</id>
 
   <name>RapidRAW</name>
-  <summary>A non-destructive, and GPU-accelerated RAW image editor built with performance in mind</summary>
+  <summary>一款注重性能的非破坏性 GPU 加速 RAW 图像编辑器</summary>
   <developer id="io.github.CyberTimon">
     <name>Timon Käch</name>
   </developer>
@@ -19,10 +19,10 @@
 
   <description>
     <p>
-      RapidRAW is a modern, high-performance alternative to Adobe Lightroom®. It delivers a simple, beautiful editing experience in a lightweight package (under 20MB) for Windows, macOS, and Linux.
+      RapidRAW 是 Adobe Lightroom® 的现代高性能替代方案。它以轻量体积（不足 20MB）为 Windows、macOS 和 Linux 提供简洁而美观的编辑体验。
     </p>
     <p>
-      I started developing this project as a personal challenge when I was 18. My goal was to create a high-performance tool for my own photography workflow while deepening my understanding of React, WGSL and Rust, with the support from Google Gemini.
+      我在 18 岁时把开发这个项目当作一次个人挑战。我的目标是为自己的摄影工作流打造一款高性能工具，同时在 Google Gemini 的支持下深入学习 React、WGSL 和 Rust。
     </p>
   </description>
 
@@ -30,7 +30,7 @@
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/CyberTimon/RapidRAW/2f7c0354580bbd403287a924e2a7fce9f2cdfc40/.github/assets/editor.png</image>
-        <caption>Editor interface</caption>
+        <caption>编辑器界面</caption>
     </screenshot>
   </screenshots>
 
@@ -41,396 +41,395 @@
     <release version="v1.5.2" date="2026-03-19">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.5.2</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>NIND Denoising: A new AI-powered denoising method based on nind-denoise that naturally removes noise from RAW images while preserving detail, replacing the older BM3D approach.</li>
-                <li>Image Analytics Panel: A switchable analysis panel with Luma Waveform, RGB Waveform, RGB Parade, Vectorscope, and RGB Histogram modes for real-time visual feedback.</li>
-                <li>Parametric Masks: Two new mask types for quickly targeting specific color ranges or luminance zones without manual brushing.</li>
-                <li>Single Point Subject Masks: Updated SAM-2 based subject detection models with single-click selection, removing the need to draw a bounding box.</li>
-                <li>JPEG XL, WebP, and CUBE LUT Export: Added support for new export formats, including the ability to export color grades as CUBE LUTs for use in video editors.</li>
-                <li>LRU Cache: Recently viewed images are now kept in cache for instant and seamless switching, ideal for culling and checking focus.</li>
-                <li>ROI Rendering: The viewport now only processes the visible region when zoomed in, significantly improving slider responsiveness.</li>
+                <li>NIND 降噪：新增基于 nind-denoise 的 AI 降噪方法，在保留细节的同时更自然地去除 RAW 图像噪点，替代旧版 BM3D 方案。</li>
+                <li>图像分析面板：新增可切换的分析面板，支持亮度波形图、RGB 波形图、RGB Parade、矢量示波器和 RGB 直方图，提供实时可视化反馈。</li>
+                <li>参数化蒙版：新增两种蒙版类型，可无需手动涂抹就快速锁定特定色彩范围或亮度区域。</li>
+                <li>单点主体蒙版：更新为基于 SAM-2 的主体检测模型，只需单击即可选中主体，无需再绘制边界框。</li>
+                <li>JPEG XL、WebP 与 CUBE LUT 导出：新增多种导出格式支持，并可将颜色分级导出为适用于视频编辑器的 CUBE LUT。</li>
+                <li>LRU 缓存：最近查看的图像会保留在缓存中，实现即时且流畅的切换，特别适合筛片和检查对焦。</li>
+                <li>ROI 渲染：放大后仅处理当前视口可见区域，显著提升滑块调整时的响应速度。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Improved tonemapper and shader, particularly how they behave within masked regions.</li>
-                <li>Refined keybinds across the app for a smoother editing workflow.</li>
-                <li>Various UI polish and visual tweaks.</li>
-                <li>Numerous bug fixes under the hood.</li>
+                <li>改进了色调映射器和着色器，尤其优化了它们在蒙版区域中的表现。</li>
+                <li>重新打磨了全应用范围内的快捷键逻辑，使编辑流程更顺手。</li>
+                <li>完成了多项界面细节与视觉表现优化。</li>
+                <li>修复了大量底层问题与缺陷。</li>
             </ul>
         </description>
     </release>
     <release version="v1.5.1" date="2026-03-07">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.5.1</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Rewritten Rendering Engine: Features a pixel-accurate Dynamic Preview and a performance-focused Static Preview for lower-end devices.</li>
-                <li>Native Fullscreen: A new seamless fullscreen mode where UI panels slide away, allowing full use of zoom and editing tools.</li>
-                <li>Fluid Masking: Real-time calculation for mask overlays and a new intuitive click-and-drag method for drawing masks.</li>
-                <li>True Pixel Peeping: Disables image smoothing at maximum zoom levels for precise analysis of noise and sharpness.</li>
+                <li>重写渲染引擎：带来像素级精确的动态预览，以及面向低性能设备的性能优先静态预览。</li>
+                <li>原生全屏：新增无缝全屏模式，界面面板会自动滑出，让缩放与编辑工具获得完整使用空间。</li>
+                <li>流畅蒙版：蒙版覆盖层支持实时计算，并新增直观的点击拖拽绘制方式。</li>
+                <li>真正的像素级查看：在最大缩放级别禁用图像平滑，便于精确检查噪点和锐度。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Added automatic cropping when applying lens corrections to hide distorted edges.</li>
-                <li>The application now remembers previous export settings.</li>
-                <li>Added support for batch converting negative film scans.</li>
-                <li>The histogram now updates instantly and smoothly in real-time.</li>
+                <li>应用镜头校正时新增自动裁切，可隐藏边缘畸变区域。</li>
+                <li>应用现在会记住上一次的导出设置。</li>
+                <li>新增对负片扫描批量转换的支持。</li>
+                <li>直方图现在可以即时且平滑地实时更新。</li>
             </ul>
         </description>
     </release>
     <release version="v1.5.0" date="2026-02-24">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.5.0</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Automatic Negative Conversion: A new tool to accurately invert film scans (negatives) to positive images with a single click.</li>
-                <li>HDR Merge: Merge multiple exposure-bracketed images into a single High Dynamic Range image.</li>
-                <li>Detail-Aware Tonal Adjustments: Overhauled the Shadows and Highlights engine to accurately target luminance while protecting local contrast and textures.</li>
-                <li>Custom AI Tagging: You can now define your own list of keywords for the AI to analyze and automatically sort your library.</li>
-                <li>XMP Metadata Sync: Full support for reading and writing XMP sidecar files, allowing synchronization of Ratings, Color Labels, and Tags.</li>
-                <li>Composition Guides: Added new overlays (Golden Ratio, Diagonals, etc.) to the crop tool.</li>
-                <li>History Dropdown: Right-click the Undo/Redo buttons to jump to specific points in your edit history.</li>
+                <li>自动负片转换：新增工具，可一键将胶片扫描件（负片）准确反转为正片图像。</li>
+                <li>HDR 合并：将多张不同曝光的包围曝光图像合成为一张高动态范围图像。</li>
+                <li>细节感知色调调整：重构阴影与高光引擎，在准确锁定亮度区域的同时保护局部对比与纹理。</li>
+                <li>自定义 AI 标签：现在可以定义自己的关键词列表，让 AI 分析并自动整理图库。</li>
+                <li>XMP 元数据同步：完整支持读取和写入 XMP 边车文件，可同步评分、颜色标签与标签信息。</li>
+                <li>构图辅助线：为裁剪工具新增黄金比例、对角线等覆盖参考线。</li>
+                <li>历史记录下拉菜单：右键撤销/重做按钮即可跳转到编辑历史中的任意节点。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Improved Image Canvas: Implemented smoother exponential zooming and state memory.</li>
-                <li>Faster fullscreen previews and metadata loading.</li>
-                <li>The main window now remembers its size and position between sessions.</li>
-                <li>Added support for drawing straight mask lines by holding Shift + Click.</li>
-                <li>Added the ability to export masks as separate image files.</li>
-                <li>Significant stability improvements and bug fixes.</li>
+                <li>改进图像画布：实现更顺滑的指数缩放，并支持状态记忆。</li>
+                <li>全屏预览和元数据加载速度更快。</li>
+                <li>主窗口现在会在会话之间记住尺寸和位置。</li>
+                <li>新增按住 Shift + 点击绘制直线蒙版的支持。</li>
+                <li>新增将蒙版导出为独立图像文件的能力。</li>
+                <li>显著提升稳定性并修复多项问题。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.12" date="2026-02-04">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.12</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Creative Effects: Introduced Glow, Halation, and Lens Flare adjustments for cinematic atmospheric effects.</li>
-                <li>Global Tooltips: Added a native tooltip system to explain button functions on hover, improving accessibility.</li>
+                <li>创意效果：新增 辉光、晕影和镜头光晕调整，带来更具电影感的氛围效果。</li>
+                <li>全局工具提示：新增原生提示系统，悬停时可解释按钮功能，提升可发现性与可用性。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Fixed a logic error where the Structure effect was incorrectly linked to Sharpness and Clarity sliders.</li>
-                <li>Major UI polish for a smoother user experience.</li>
+                <li>修复了结构效果被错误关联到锐化和清晰度滑块的逻辑问题。</li>
+                <li>对界面进行了大幅润色，带来更顺滑的使用体验。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.11" date="2026-01-31">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.11</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>New RAW Preprocessing Algorithm: Whole new preprocessing engine that handles color noise and sharpness significantly better.</li>
-                <li>Fuji X-Trans: Much better handling of Fuji X-Trans sensors for cleaner and sharper details.</li>
-                <li>Flat-Line Clipping in Curves: Added the ability to drag curve start and end points along the X-axis to precisely clip blacks and whites.</li>
+                <li>全新 RAW 预处理算法：重写预处理引擎，显著提升彩色噪点处理和锐度表现。</li>
+                <li>Fuji X-Trans：大幅改进对 Fuji X-Trans 传感器的处理，获得更干净、更锐利的细节。</li>
+                <li>曲线中的平线裁切：新增沿 X 轴拖动曲线起点和终点的能力，可精确裁切黑场与白场。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Improved Lens Detection: Enhanced the Lensfun parser for more reliable detection and added support for more manufacturers.</li>
-                <li>Fluid Navigation: Rapidly switching images is now much smoother thanks to new logic that cancels pending load requests for skipped images.</li>
-                <li>Added cross-channel copy/paste functionality for the curves tool.</li>
-                <li>The productivity context menu is now accessible directly within the editor view.</li>
+                <li>改进镜头检测：增强 Lensfun 解析器，提高识别可靠性，并支持更多厂商。</li>
+                <li>流畅导航：快速切换图像时会取消被跳过图片的待处理加载请求，使浏览更加顺滑。</li>
+                <li>新增曲线工具跨通道复制/粘贴功能。</li>
+                <li>生产力上下文菜单现在可直接在编辑器视图中访问。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.10" date="2026-01-26">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.10</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Reworked Local Contrast: A completely new shader approach for sharpness, clarity, and structure that eliminates "black hole" artifacts around high-contrast edges.</li>
-                <li>Fine Rotation Grid: The rotation and transform grid now dynamically transitions from the rule of thirds to a high-precision fine grid for better alignment accuracy.</li>
-                <li>Favourite Lenses: Frequently used lenses can now be saved in settings for quick access within the Lens Correction panel.</li>
-                <li>Improved Lens Correction: Enhanced the mathematical accuracy of lens profile applications based on initial testing and feedback.</li>
+                <li>重做局部对比度：为 Sharpness、Clarity 和 Structure 采用全新的着色器方案，消除高反差边缘周围的“黑洞”伪影。</li>
+                <li>精细旋转网格：旋转与变换网格现在会从三分法动态切换到高精度细网格，提升对齐准确度。</li>
+                <li>收藏镜头：常用镜头现在可保存在设置中，便于在镜头校正面板中快速调用。</li>
+                <li>改进镜头校正：根据初步测试和反馈，提升镜头配置文件应用时的数学精度。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Fixed quick eraser functionality.</li>
-                <li>Improved contrast for the sepia UI theme.</li>
+                <li>修复快速橡皮擦功能。</li>
+                <li>提升复古棕色主题界面的对比度。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.9" date="2026-01-25">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.9</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Lens Correction: Integrated the Lensfun library for dedicated corrections of optical flaws.</li>
-                <li>Geometry Warping Tools: Added a dedicated transform modal to fix perspective and composition with dynamic alignment guides.</li>
-                <li>Refactored Masking System: Rebuilt the masking panel to support sequential masking, drag-and-drop reordering, and individual component opacity.</li>
-                <li>Export Presets: Added a manager to save and reuse export settings like quality and dimensions.</li>
-                <li>AI Infrastructure: Migrated to a dedicated middleware client (RapidRAW-AI-Connector) for more robust and flexible generative AI integration.</li>
-                <li>Improved Large Library Performance: The filmstrip now uses virtualized rendering, significantly speeding up navigation in folders with thousands of images.</li>
-                <li>Centralized EXIF: Refactored metadata handling for better consistency and added support for formats like .RAF, .CR3 and more.</li>
+                <li>镜头校正：集成 Lensfun 库，用于专门修正镜头的光学缺陷。</li>
+                <li>几何变形工具：新增专用变换模态框，可借助动态对齐参考线修复透视和构图问题。</li>
+                <li>重构蒙版系统：重建蒙版面板，支持顺序蒙版、拖拽排序和单个组件不透明度控制。</li>
+                <li>导出预设：新增管理器，可保存并复用质量、尺寸等导出设置。</li>
+                <li>AI 基础设施：迁移到专用中间件客户端（RapidRAW-AI-Connector），以获得更稳健、更灵活的生成式 AI 集成。</li>
+                <li>大型图库性能提升：胶片条现在使用虚拟化渲染，在包含数千张图片的文件夹中浏览更快。</li>
+                <li>集中式 EXIF：重构元数据处理逻辑以提升一致性，并新增对 .RAF、.CR3 等格式的支持。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Implemented library preloading to reduce image loading times.</li>
-                <li>Improved UI contrast and standardized slider styles across the application.</li>
-                <li>Updated the Rawler library for improved camera support.</li>
-                <li>General stability improvements and "under the hood" code cleanup.</li>
+                <li>实现图库预加载，降低图像加载时间。</li>
+                <li>改进界面对比度，并统一全应用的滑块样式。</li>
+                <li>更新 Rawler 库，提升相机支持范围。</li>
+                <li>提升整体稳定性，并完成大量底层代码清理。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.8" date="2026-01-11">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.8</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Live Previews: See changes in near real-time as you drag sliders, thanks to a large rewrite of the GPU processing engine. The old behavior can be restored in settings for less powerful machines.</li>
-                <li>Updated Collage Maker: Completely overhauled with drag &amp; drop placement, an option to keep aspect ratios, and zoom &amp; pan controls within each cell.</li>
-                <li>LUT Quality Improvement: Implemented tetrahedral interpolation to eliminate banding and posterization artifacts, ensuring smooth color transitions even with low-resolution LUTs.</li>
+                <li>实时预览：大幅重写 GPU 处理引擎后，拖动滑块时几乎可以实时看到变化。旧行为仍可在设置中恢复，以适配性能较弱的机器。</li>
+                <li>升级拼贴编辑器：完全重做，支持拖拽摆放、保持宽高比，以及每个单元格内的缩放与平移控制。</li>
+                <li>LUT 质量提升：实现四面体插值，消除色带和色块伪影，即使使用低分辨率 LUT 也能获得平滑的颜色过渡。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Added a separate preview worker and optional high-quality live previews.</li>
-                <li>Enhanced EXIF UI with more info when hovering over the image name.</li>
-                <li>Added a 'Prefer RAW' filter option to the library.</li>
-                <li>Added support for uppercase file extensions.</li>
-                <li>The thumbnail cache is now flushed when switching folders.</li>
-                <li>AI masking stability improvements under load.</li>
-                <li>Updated the Rawler library.</li>
+                <li>新增独立预览工作线程，并提供可选的高质量实时预览。</li>
+                <li>增强 EXIF 界面，在悬停图片名称时显示更多信息。</li>
+                <li>为图库新增“优先 RAW”筛选选项。</li>
+                <li>新增对大写文件扩展名的支持。</li>
+                <li>切换文件夹时现在会清空缩略图缓存。</li>
+                <li>提升高负载下 AI 蒙版的稳定性。</li>
+                <li>更新 Rawler 库。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.7" date="2025-12-23">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.7</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Image Denoising: Implemented the BM3D algorithm for effective noise removal while preserving actual image detail.</li>
-                <li>White Balance Picker: Added a pipette tool to pick a neutral reference point and automatically set the correct temperature and tint.</li>
-                <li>Reworked Metadata Handling: Hovering over the file name now displays key shooting data. EXIF data is now reliably written to the file during export.</li>
-                <li>Reworked Grain: A new film grain engine that generates natural monochromatic noise without RGB color noise or grid patterns.</li>
-                <li>Delete Workflow Improvements: Deleting an image no longer forces the library list to reload, making culling significantly smoother.</li>
+                <li>图像降噪：实现 BM3D 算法，在有效降噪的同时保留真实图像细节。</li>
+                <li>白平衡拾色器：新增吸管工具，可选取中性参考点并自动设置正确的色温与色调。</li>
+                <li>重做元数据处理：悬停文件名时现在会显示关键拍摄数据，导出时 EXIF 数据也能稳定写回文件。</li>
+                <li>重做颗粒：全新的胶片颗粒引擎，生成自然的单色噪点，不再出现 RGB 彩噪或网格纹理。</li>
+                <li>删除流程改进：删除图片不再强制重新加载图库列表，让筛片过程更顺畅。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Exposure slider added to masking tools.</li>
-                <li>Improved mask eraser tool behavior.</li>
-                <li>Batch export stability improvements and RAM optimization.</li>
-                <li>New export option added directly to the context menu.</li>
-                <li>Updated dark mode wallpaper.</li>
+                <li>为蒙版工具新增曝光滑块。</li>
+                <li>改进蒙版橡皮擦工具行为。</li>
+                <li>提升批量导出稳定性并优化内存占用。</li>
+                <li>在右键菜单中直接新增导出选项。</li>
+                <li>更新深色模式壁纸。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.6" date="2025-11-30">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.6</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Recursive Library View: You can now display an image grid that includes files from all subfolders within a selected directory.</li>
-                <li>Reworked HSL Luminance Controls: Reworked logic to prevent blocky artifacts on compressed images, resulting in smoother transitions.</li>
-                <li>Mask Stacking: Adding a new empty mask on top of another now adds to the stack without visually resetting the previous mask's changes.</li>
-                <li>Vibrancy Improvement: The algorithm has been tweaked to better protect skin tones from oversaturation.</li>
+                <li>递归图库视图：现在可以显示所选目录及其所有子文件夹中的图像网格。</li>
+                <li>重做 HSL 明度控制：调整逻辑以避免压缩图像出现块状伪影，让过渡更平滑。</li>
+                <li>蒙版堆叠：在另一个蒙版上方添加新的空蒙版时，现在会直接叠加到栈中，而不会视觉上重置前一个蒙版效果。</li>
+                <li>自然饱和度改进：调整算法，更好地保护肤色不过度饱和。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Added support for the QOI file format.</li>
-                <li>Updated the rawloader library to support a wider range of cameras.</li>
-                <li>Improved handling of DNG files.</li>
-                <li>Fixed several bugs within the masking system.</li>
+                <li>新增对 QOI 文件格式的支持。</li>
+                <li>更新 rawloader 库，以支持更多相机。</li>
+                <li>改进对 DNG 文件的处理。</li>
+                <li>修复蒙版系统中的多个问题。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.5" date="2025-11-16">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.5</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Keyword Tagging: Tag images with custom keywords, AI suggestions, and quick shortcuts.</li>
-                <li>Virtual Copies: Create multiple edits of an image without duplicating the file on disk.</li>
-                <li>Folder Search: A new search bar to quickly find folders in the library panel.</li>
-                <li>"Open With" Support: Right-click an image in your file manager to open it directly in RapidRAW.</li>
+                <li>关键词标记：可使用自定义关键词、AI 建议和快捷方式为图像打标签。</li>
+                <li>虚拟副本：无需复制磁盘文件，就能为同一张图像创建多个编辑版本。</li>
+                <li>文件夹搜索：图库面板新增搜索栏，可快速查找文件夹。</li>
+                <li>“打开方式”支持：现在可在文件管理器中右键图片，直接用 RapidRAW 打开。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Improved AgX color matrices to fix the red-to-orange color shift.</li>
-                <li>Added new keyboard shortcuts for navigating the library.</li>
-                <li>The library now automatically scrolls to keep the selected image in view.</li>
-                <li>Added support for the EXR file format.</li>
-                <li>Redesigned the settings page for better usability.</li>
-                <li>The app is now locked to a single instance to prevent multiple windows.</li>
-                <li>Minor UI polish on some components and a new dark mode background.</li>
-                <li>The bottom bar now displays a count of how many images are selected.</li>
+                <li>改进 AgX 颜色矩阵，修复红色偏橙的问题。</li>
+                <li>新增图库导航快捷键。</li>
+                <li>图库现在会自动滚动，保持所选图片处于可见区域。</li>
+                <li>新增对 EXR 文件格式的支持。</li>
+                <li>重新设计设置页面，提升易用性。</li>
+                <li>应用现在被限制为单实例运行，防止打开多个窗口。</li>
+                <li>对部分组件进行了细节润色，并新增深色模式背景。</li>
+                <li>底栏现在会显示当前选中的图片数量。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.4" date="2025-11-02">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.4</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>AgX Color Management: Like in Blender and darktable, RapidRAW now supports the advanced AgX tone mapper for better highlight rolloff and more natural colors.</li>
-                <li>Reworked Exposure Controls: The exposure slider has been split into two more powerful controls: Exposure (for true exposure compensation) and Brightness (for adjusting mid-tones).</li>
-                <li>Copy Paste Settings: Selectively copy and paste adjustments between images with new Merge and Replace modes to give you full control over how settings are applied.</li>
-                <li>Processing Engine Settings: A new section to manually select the processing backend for performance tuning. Includes a Linux GPU Compatibility Mode to resolve stability issues for some users.</li>
+                <li>AgX 色彩管理：像 Blender 和 darktable 一样，RapidRAW 现在支持更高级的 AgX 色调映射器，可带来更自然的高光过渡和色彩表现。</li>
+                <li>重做曝光控制：曝光滑块被拆分为两个更强大的控制项，即 Exposure（真实曝光补偿）和 Brightness（调整中间调）。</li>
+                <li>复制粘贴设置：新增 Merge 与 Replace 模式，可有选择地在图片之间复制和粘贴调整项，更灵活地控制设置应用方式。</li>
+                <li>处理引擎设置：新增专门区域手动选择处理后端以进行性能调优，同时加入 Linux GPU 兼容模式，帮助部分用户解决稳定性问题。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Moved more core parts from 8-bit to 32-bit float for increased precision.</li>
-                <li>Improved accuracy of the Color Mixer, which may cause some HSL-related edits to appear slightly different.</li>
-                <li>Faster image loading times.</li>
-                <li>RAW highlight recovery is now adjustable via the new processing engine settings.</li>
+                <li>将更多核心处理从 8 位提升到 32 位浮点，增加精度。</li>
+                <li>提升颜色混合器的准确性，因此部分 HSL 相关编辑结果可能会略有变化。</li>
+                <li>图像加载更快。</li>
+                <li>RAW 高光恢复现在可通过新的处理引擎设置进行调节。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.3" date="2025-10-19">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.3</url>
         <description translate="no">
-            <p>New Features</p>
+            <p>新功能</p>
             <ul>
-                <li>Pin Folders: Tired of constantly navigating between folders on different drives? Now you can right click any folder to pin it to a dedicated section in the sidebar for quick access.</li>
-                <li>Apply Presets To Masks: Apply any saved preset directly to a mask. This is a huge time saver for applying targeted adjustments like a "Clarity Boost" to a subject mask.</li>
-                <li>Centré Adjustment: A new slider that acts like an inverted vignette, subtly boosting clarity, brightness, and contrast in the middle of the frame to draw attention to your subject.</li>
-                <li>Whole Image Mask Type: Added a new mask type that covers the entire image, useful as a base for subtracting or inverting other mask components. This also lays the groundwork for future mask types without cluttering the UI.</li>
+                <li>固定文件夹：还在不同磁盘之间来回找文件夹吗？现在可以右键任意文件夹，将其固定到侧边栏专属区域，便于快速访问。</li>
+                <li>将预设应用到蒙版：任意已保存预设现在都可直接应用到蒙版上，大幅提升对主体进行定向调整时的效率，比如快速套用“清晰度增强”。</li>
+                <li>Centré 调整：新增滑块，效果类似反向暗角，可轻微提升画面中心区域的清晰度、亮度和对比度，把注意力引向主体。</li>
+                <li>整图蒙版类型：新增覆盖整张图像的蒙版类型，适合作为减去或反转其他蒙版组件的基础，也为未来更多蒙版类型铺平道路而不增加界面负担。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Library thumbnail updating is now much smoother.</li>
-                <li>Rawler is now a submodule, thanks to @william-sy.</li>
-                <li>The logger has been improved to output the full traceback for better debugging.</li>
+                <li>图库缩略图更新现在更顺滑。</li>
+                <li>感谢 @william-sy，Rawler 现在作为子模块引入。</li>
+                <li>改进日志系统，可输出完整 traceback，便于调试。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.2" date="2025-10-11">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.2</url>
         <description translate="no">
-            <p>Exposure and Highlights Improvements</p>
+            <p>曝光与高光改进</p>
             <ul>
-                <li>Completely reworked Exposure and Highlights sliders for more natural, realistic image adjustments.</li>
-                <li>Exposure adjustments now feature smoother rolloff and prevent oversaturation.</li>
-                <li>Highlights recovery produces significantly better detail and tonal balance.</li>
+                <li>彻底重做曝光和高光滑块，使图像调整更加自然、真实。</li>
+                <li>曝光调整现在拥有更平滑的高光过渡，并可避免过度饱和。</li>
+                <li>高光恢复可带来显著更好的细节和色调平衡。</li>
             </ul>
-            <p>Watermarking Support</p>
+            <p>水印支持</p>
             <ul>
-                <li>Added a new Watermark feature in the export panel.</li>
-                <li>Users can add custom logos or branding to exported images.</li>
-                <li>Full control over position, anchor, scale, spacing, and opacity.</li>
+                <li>导出面板新增水印功能。</li>
+                <li>用户可为导出的图像添加自定义徽标或品牌标识。</li>
+                <li>可完整控制位置、锚点、缩放、间距和不透明度。</li>
             </ul>
-            <p>Other Improvements</p>
+            <p>其他改进</p>
             <ul>
-                <li>Various bug fixes and better crash handling.</li>
-                <li>Thumbnails in the filmstrip now update more smoothly.</li>
+                <li>修复多项问题，并改进崩溃处理。</li>
+                <li>胶片条中的缩略图更新现在更顺滑。</li>
             </ul>
         </description>
     </release>
     <release version="v1.4.1" date="2025-09-28">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.1</url>
         <description translate="no">
-            <p>Performance Hotfix</p>
-            <p>Version 1.4.1 addresses critical performance issues introduced in v1.4.0, where using local contrast tools could cause severe slowdowns and even crashes.</p>
-            <p>I strongly recommend skipping v1.4.0 and upgrading directly to v1.4.1.</p>
+            <p>性能紧急修复</p>
+            <p>1.4.1 版本修复了 v1.4.0 引入的严重性能问题，当时使用局部对比度工具可能会导致明显卡顿，甚至发生崩溃。</p>
+            <p>我强烈建议跳过 v1.4.0，直接升级到 v1.4.1。</p>
         </description>
     </release>
     <release version="v1.4.0" date="2025-09-28">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.4.0</url>
         <description translate="no">
-            <p>This update introduces several new tools and foundational improvements to the software.</p>
-            <p>New Features</p>
+            <p>本次更新为软件带来了多项新工具和底层能力改进。</p>
+            <p>新功能</p>
             <ul>
-                <li>Auto Culling: Scans your selection for duplicates and blurry photos, then lets you flag or delete them in a batch to speed up your workflow.</li>
-                <li>Collage Maker: An integrated collage maker with multiple layouts, allowing you to control spacing, border radius, and background color.</li>
-                <li>Color Calibration: A new panel to directly modify the hue and saturation of the primary RGB channels, enabling more significant and stylized color shifts.</li>
-                <li>Universal Preset Importer: Import presets from other common photo editors. While not a 1:1 conversion, it provides a solid starting point for your edits.</li>
-                <li>Adjustments Visibility: A new setting lets you hide advanced adjustments you don't use, allowing you to maintain a simpler interface.</li>
-                <li>Sort Library by EXIF Data: Organize your photo library by ISO, aperture, focal length, and other EXIF tags.</li>
+                <li>自动筛片：扫描所选图片中的重复项和模糊照片，并支持批量标记或删除，以加快工作流。</li>
+                <li>拼贴编辑器：内置拼贴制作工具，提供多种布局，并可控制间距、圆角半径和背景颜色。</li>
+                <li>色彩校准：新增面板，可直接调整 RGB 主通道的色相和饱和度，以实现更明显、更风格化的色彩偏移。</li>
+                <li>通用预设导入器：可导入其他常见图片编辑器中的预设。虽然不是 1:1 转换，但能为你的编辑提供一个可靠起点。</li>
+                <li>调整项可见性：新增设置，可隐藏你不常用的高级调整项，让界面保持更简洁。</li>
+                <li>按 EXIF 数据排序图库：可按 ISO、光圈、焦距及其他 EXIF 标签整理照片库。</li>
             </ul>
-            <p>Core Improvements</p>
+            <p>核心改进</p>
             <ul>
-                <li>Reworked Local Contrast Tools: The local contrast tools (Sharpness, Clarity, Structure) have been re-engineered to provide higher quality results and interact more predictably with other adjustments like exposure.</li>
-                <li>Improved performance when loading library folders.</li>
-                <li>Various shader optimizations and bug fixes.</li>
-                <li>General improvements to application stability and logging.</li>
-                <li>Brand new app icons &amp; dark theme wallpaper.</li>
+                <li>重做局部对比度工具：Sharpness、Clarity 和 Structure 经过重新设计，能提供更高质量的结果，并与曝光等其他调整更可预测地协同工作。</li>
+                <li>加载图库文件夹时的性能更好。</li>
+                <li>完成多项着色器优化和问题修复。</li>
+                <li>提升整体稳定性与日志能力。</li>
+                <li>全新的应用图标与深色主题壁纸。</li>
             </ul>
-            <p>Important: Action Required for Upgrading Users</p>
-            <p>In this update, the application's internal identifier has been changed from <code>com.rapidraw.app</code> to <code>io.github.CyberTimon.RapidRAW</code>. This is a technical but important change that helps with long-term maintenance and ensures better compatibility going forward.</p>
-            <p>Unfortunately, this means that when you first launch v1.4.0, it won't be able to find your existing user data. As a result:</p>
+            <p>重要提示：升级用户需执行的操作</p>
+            <p>在这次更新中，应用的内部标识符已从 <code>com.rapidraw.app</code> 更改为 <code>io.github.CyberTimon.RapidRAW</code>。这是一项技术层面但非常重要的改动，有助于长期维护，并确保未来具备更好的兼容性。</p>
+            <p>但这也意味着，首次启动 v1.4.0 时，它将无法找到你现有的用户数据。因此：</p>
             <ul>
-                <li>Your AI models will need to be redownloaded.</li>
-                <li>Your library thumbnails will be regenerated.</li>
-                <li>Crucially, all of your saved presets will be gone.</li>
+                <li>你的 AI 模型需要重新下载。</li>
+                <li>你的图库缩略图会重新生成。</li>
+                <li>最关键的是，你所有已保存的预设都会丢失。</li>
             </ul>
-            <p>To avoid losing your data, please choose one of the migration options below before you launch the new version for the first time.</p>
-            <p>Option A: Full Migration (Recommended)</p>
-            <p>This method migrates everything: your settings, presets, and cached data. To do this, you'll need to manually rename the application's data folder.</p>
+            <p>为了避免数据丢失，请在首次启动新版本前，从下面的迁移方案中选择一种。</p>
+            <p>方案 A：完整迁移（推荐）</p>
+            <p>这种方法会迁移全部内容：你的设置、预设和缓存数据。你需要手动重命名应用的数据文件夹。</p>
             <ul>
-                <li>Linux: The location can vary, but typically check <code>~/.config/</code> and <code>~/.local/share/</code>. Rename the <code>com.rapidraw.app</code> folder in each relevant location to <code>io.github.CyberTimon.RapidRAW</code>.</li>
+                <li>Linux：具体位置可能因发行版而异，但通常可检查 <code>~/.config/</code> 和 <code>~/.local/share/</code>。请将每个相关位置中的 <code>com.rapidraw.app</code> 文件夹重命名为 <code>io.github.CyberTimon.RapidRAW</code>。</li>
             </ul>
-            <p>Option B: Migrate Presets Only</p>
-            <p>If you only care about saving your presets and don't mind re-caching thumbnails and models, this is a simpler alternative.</p>
+            <p>方案 B：仅迁移预设</p>
+            <p>如果你只关心保存预设，不介意重新缓存缩略图和模型，这是更简单的替代方案。</p>
             <ol>
-                <li>In your old version of RapidRAW, export all your presets to a safe location.</li>
-                <li>Install and open RapidRAW v1.4.0.</li>
-                <li>Import your presets using the new Universal Preset Importer.</li>
+                <li>在旧版 RapidRAW 中，将所有预设导出到一个安全位置。</li>
+                <li>安装并打开 RapidRAW v1.4.0。</li>
+                <li>使用新的通用预设导入器导入你的预设。</li>
             </ol>
-            <p>I sincerely apologize for the inconvenience this one-time migration step causes. This change was a tough decision, but it sets the app up for a more stable and robust future. Thank you for your understanding!</p>
+            <p>对于这次一次性的迁移步骤带来的不便，我深感抱歉。这个改变虽然难以取舍，但它能让应用在未来更加稳定、健壮。感谢你的理解！</p>
         </description>
     </release>
     <release version="v1.3.13" date="2025-09-14">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.3.13</url>
         <description translate="no">
-            <p>Community Presets Sharing</p>
-            <p>I wanted to create a place where people can share presets with each other, so I've added a new Community Presets page. To get things started, I've already shared 7 of my own. I'm looking forward to seeing what you all come up with.</p>
-            <p>To submit your own preset, please follow the submission guide located at the bottom of the Community Presets page.</p>
-            <p>Generative AI Improvements</p>
-            <p>This release includes a new ComfyUI workflow that handles high-quality inpainting much better. The results should now be nearly the same resolution as the original image. The installation for the workflow is also simpler, now requiring only one custom ComfyUI node.</p>
-            <p>I've also adjusted the UI to better align with the project's AI Roadmap. This includes a placeholder for a planned future cloud service, which would be an option for those who don't have the hardware to self-host or prefer not to set it up themselves (not paywalling features).</p>
-            <p>If you have any ideas or feedback on the AI roadmap, feel free to let me know.</p>
-            <p>Info</p>
-            <p>Upgrading to this version will reset the app’s settings &amp; comfyui config (your edits will not be affected).</p>
+            <p>社区预设分享</p>
+            <p>我一直想做一个让大家彼此分享预设的地方，所以新增了社区预设页面。为了先把内容填起来，我已经分享了自己制作的 7 个预设，也很期待看看大家会带来什么作品。</p>
+            <p>如果你想提交自己的预设，请按照社区预设页面底部的投稿指南操作。</p>
+            <p>生成式 AI 改进</p>
+            <p>本次发布包含一个新的 ComfyUI 工作流，可更好地处理高质量修补，生成结果的分辨率现在应当几乎接近原图。该工作流的安装流程也更简单了，现在只需一个自定义 ComfyUI 节点。</p>
+            <p>我还调整了界面，使其更贴合项目的 AI 路线图。这其中包含一个为未来云服务预留的占位方案，方便那些没有硬件自托管，或不想自行搭建的用户使用（不是把功能做成付费墙）。</p>
+            <p>如果你对 AI 路线图有任何想法或反馈，欢迎告诉我。</p>
+            <p>说明</p>
+            <p>升级到这个版本会重置应用设置和 ComfyUI 配置（不会影响你的编辑内容）。</p>
         </description>
     </release>
     <release version="v1.3.12" date="2025-09-09">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.3.12</url>
         <description translate="no">
-            <p>Clipping Warnings</p>
-            <p>You can now toggle clipping warnings in the Curves tool to highlight overexposed areas in red and underexposed areas in blue.</p>
-            <p>Update Notifier</p>
-            <p>With the new update notifier, you’ll never miss an update.</p>
-            <p>Other Improvements</p>
+            <p>裁切警告</p>
+            <p>现在你可以在曲线工具中切换裁切警告，用红色高亮过曝区域，用蓝色高亮欠曝区域。</p>
+            <p>更新通知</p>
+            <p>借助新的更新通知器，你将不会再错过版本更新。</p>
+            <p>其他改进</p>
             <ul>
-                <li>Updated all dependencies and migrated from Rust 2021 to Rust 2024 (thanks @RayJW).</li>
-                <li>Improved performance through updated dependencies.</li>
-                <li>Enhanced accuracy in the HSL panel.</li>
-                <li>Fixed the inverted tint slider (you may need to readjust existing edits).</li>
+                <li>更新全部依赖，并从 Rust 2021 迁移到 Rust 2024（感谢 @RayJW）。</li>
+                <li>通过更新依赖提升性能。</li>
+                <li>提高 HSL 面板的准确性。</li>
+                <li>修复反向色调滑块问题（你可能需要重新调整已有编辑）。</li>
             </ul>
         </description>
     </release>
     <release version="v1.3.11" date="2025-08-31">
         <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.3.11</url>
         <description translate="no">
-            <p>ComfyUI Integration</p>
-            <p>ComfyUI integration has been significantly improved to make it more accessible and user-friendly. You can now:</p>
+            <p>ComfyUI 集成</p>
+            <p>ComfyUI 集成已得到大幅改进，变得更易用也更友好。现在你可以：</p>
             <ul>
-                <li>Select a custom inpainting workflow or use the built-in default workflow.</li>
-                <li>Define and map which models should be loaded.</li>
-                <li>See which custom nodes you need to install, in order to use the default workflow.</li>
+                <li>选择自定义修补工作流，或使用内置默认工作流。</li>
+                <li>定义并映射需要加载的模型。</li>
+                <li>查看使用默认工作流所需安装的自定义节点。</li>
             </ul>
-            <p>RapidRAW automatically handles downscaling, mask generation, patch layer composition, and saving. These enhancements make ComfyUI integration practical for everyday use.</p>
-            <p>Note: Some bugs and unfinished elements may still be present. Please report any issues you encounter. Also, if you have a better &amp; easier inpainting workflow, please share it with me as I'm not satisfied with the current one.</p>
-            <p>Chromatic Aberration Correction</p>
-            <p>A new tool for chromatic aberration correction has been added.</p>
-            <p>Other Improvements</p>
+            <p>RapidRAW 现在会自动处理下采样、蒙版生成、补丁图层合成与保存流程。这些增强让 ComfyUI 集成更适合日常使用。</p>
+            <p>说明：当前版本中仍可能存在一些问题和未完成的部分。如果你遇到问题，请告诉我。另外，如果你有更好、更简单的修补工作流，也欢迎分享给我，因为我对当前方案还不够满意。</p>
+            <p>色差校正</p>
+            <p>新增了一个用于色差校正的工具。</p>
+            <p>其他改进</p>
             <ul>
-                <li>Changing folders now cancels previous thumbnail generation and folder indexing jobs, preventing performance slowdowns on many machines.</li>
-                <li>LUT's parser is more robust / less error prone now.</li>
-                <li>Mask grow / feather parameter now correctly applies on the final image.</li>
+                <li>切换文件夹时现在会取消之前的缩略图生成和文件夹索引任务，避免许多机器出现性能下降。</li>
+                <li>LUT 解析器现在更加稳健，不容易出错。</li>
+                <li>蒙版扩展 / 羽化参数现在会正确应用到最终图像上。</li>
             </ul>
         </description>
     </release>
     <release version="v1.3.10" date="2025-08-24">
       <url type="details">https://github.com/CyberTimon/RapidRAW/releases/tag/v1.3.10</url>
       <description translate="no">
+        <p>新功能</p>
         <ul>
-          <li>LUTs</li>
-            You can now apply LUTs directly to your images, with support for .cube, .3dl, .png, .jpg, .jpeg, and .tiff files. This makes it easy to add color grading or use a LUT as a creative starting point.
-          <li>Estimated File Size</li>
-            Before exporting, you’ll now see an estimated file size, helping you balance image quality with file size for the best results.
+          <li>LUT：现在可以直接将 LUT 应用于图像，支持 .cube、.3dl、.png、.jpg、.jpeg 和 .tiff 文件，便于快速进行色彩分级，或把 LUT 作为创意起点。</li>
+          <li>预计文件大小：导出前现在会显示预计文件大小，帮助你在图像质量与文件体积之间取得更好的平衡。</li>
         </ul>
       </description>
     </release>

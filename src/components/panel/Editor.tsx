@@ -12,6 +12,7 @@ import ImageCanvas from './editor/ImageCanvas';
 import { Mask, SubMask } from './right/Masks';
 import { BrushSettings, Invokes, Panel, SelectedImage, TransformState } from '../ui/AppProperties';
 import type { OverlayMode } from './right/CropPanel';
+import { useI18n } from '../../i18n';
 
 interface EditorProps {
   activeAiPatchContainerId: string | null;
@@ -115,6 +116,7 @@ export default function Editor({
   liveRotation,
   isInstantTransition,
 }: EditorProps) {
+  const { t } = useI18n();
   const [crop, setCrop] = useState<Crop | null>(null);
   const prevCropParams = useRef<any>(null);
   const [isMaskHovered, setIsMaskHovered] = useState(false);
@@ -673,7 +675,7 @@ export default function Editor({
   if (!selectedImage) {
     return (
       <div className="flex-1 bg-bg-secondary rounded-lg flex items-center justify-center text-text-secondary">
-        <p>Select an image from the library to begin editing.</p>
+        <p>{t('library.selectImageToBegin')}</p>
       </div>
     );
   }
